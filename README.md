@@ -13,6 +13,6 @@ git pull # pull down the most recent version of this repo
 scp bin/install_and_configure_git pi@some_raspi_host:~
 
 #on the remote pi:
-cat ~/install_and_configure_git > sh
+cat ~/install_and_configure_git | bash
 ```
 
