@@ -35,7 +35,7 @@ if [ -f $HOME/.ssh/id_ed25519.pub ]; then
   echoerr "an ssh key already exists"
 else
   echoerr "generating an ssh key"
-  if ! $ ssh-keygen -t ed25519 -C "dan@dankulla.com" -q -N""; then
+  if ! ssh-keygen -t ed25519 -C "dan@dankulla.com" -q -N""; then
     echoerr "there was a problem generating the ssh key"
     exit 1
   fi
