@@ -2,9 +2,7 @@
 
 set +ex
 
-echoerr() {
-  printf "%s\n" "$*" >&2
-}
+source echoerr
 
 echoerr 'installing pyenv'
 curl https://pyenv.run | bash

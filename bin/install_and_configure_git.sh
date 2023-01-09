@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 set +ex
 
-
-function echoerr() {
-  printf "%s\n" "$*" >&2
-}
+source echoerr
 
 echoerr "updating and upgrading apt..."
 
