@@ -1,13 +1,34 @@
 #!/usr/bin/env bash
+
 set +ex
 
 echoerr() {
   printf "%s\n" "$*" >&2
 }
 
-echoerr "installing pyenv"
+echoerr 'installing pyenv'
 curl https://pyenv.run | bash
 echoerr "done installing pyenv"
+
+echoerr 'adding pyenv environment variables to .bashrc'
+# we want to put these literal strings (with their variables) into .bashrc
+# without interpolating/evaluating the variables
+# shellcheck disable=SC2016
+{
+  echo 'export PYENV_ROOT="$HOME/.pyenv"'
+  echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
+  echo 'eval "$(pyenv init -)"'
+} >> ~/.bashrc
+
+echoerr "adding pyenv environment variables to .profile"
+# we want to put these literal strings (with their variables) into .profile
+# without interpolating/evaluating the variables
+# shellcheck disable=SC2016
+{
+  echo 'export PYENV_ROOT="$HOME/.pyenv"'
+  echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
+  echo 'eval "$(pyenv init -)"'
+} >> ~/.profile
 
 echoerr "installing docker"
 curl -fsSL https://get.docker.com -o get-docker.sh
