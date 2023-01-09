@@ -30,6 +30,19 @@ echoerr "adding pyenv environment variables to .profile"
   echo 'eval "$(pyenv init -)"'
 } >> ~/.profile
 
+# shellcheck disable=SC2016
+echoerr 'restarting the shell to pick up the changes to $PATH'
+source "$HOME/.bashrc"
+
+echoerr "installing the latest python 3.11 version"
+pyenv install 3.11
+
+echoerr 'making python 3.11 the global python'
+pyenv global 3.11
+
+echoerr 'restarting the shell to pick up the pyenv changes'
+source "$HOME/.bashrc"
+
 echoerr "installing docker"
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
