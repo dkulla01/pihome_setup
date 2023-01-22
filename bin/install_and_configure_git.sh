@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 set +ex
 
-source echoerr
+DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+# since the path building here is dynamic, 
+# shellcheck disable=SC1091
+source "$DIR/echoerr.sh"
+
 
 echoerr "updating and upgrading apt..."
 
