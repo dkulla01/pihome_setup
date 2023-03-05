@@ -50,7 +50,12 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 
 echoerr "done installing docker. adding user \"${USER}\" to the docker group"
-sudo groupadd docker
+if [ "$(getent group docker)" ]; then
+  echoerr 'docker group already exists'
+else
+  echoerr 'docker group does not exist. adding it now'
+  sudo groupadd docker
+fi
 sudo usermod -aG docker "$USER"
 newgrp docker
 
