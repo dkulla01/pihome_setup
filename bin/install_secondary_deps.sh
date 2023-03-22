@@ -4,9 +4,22 @@ set +ex
 
 DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-# since the path building here is dynamic, 
-# shellcheck disable=SC1091
 source "$DIR/echoerr.sh"
+source "$DIR/install_package_if_absent.sh"
+
+echoerr 'installing packages required for pyenv to build pythons'
+
+install_package_if_absent 'libssl-dev'
+install_package_if_absent 'build-essential'
+install_package_if_absent 'zlib1g-dev'
+install_package_if_absent 'libffi-dev'
+install_package_if_absent 'libssl-dev'
+install_package_if_absent 'libbz2-dev'
+install_package_if_absent 'libreadline-dev'
+install_package_if_absent 'libsqlite3-dev'
+install_package_if_absent 'liblzma-dev'
+
+echoerr 'done installing packages required for pyenv to build pythons.'
 
 echoerr 'installing pyenv'
 curl https://pyenv.run | bash
@@ -50,7 +63,12 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 
 echoerr "done installing docker. adding user \"${USER}\" to the docker group"
-sudo groupadd docker
+if [ "$(getent group docker)" ]; then
+  echoerr 'docker group already exists'
+else
+  echoerr 'docker group does not exist. adding it now'
+  sudo groupadd docker
+fi
 sudo usermod -aG docker "$USER"
 newgrp docker
 

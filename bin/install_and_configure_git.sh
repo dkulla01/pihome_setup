@@ -34,12 +34,11 @@ if ! command -v git; then
   fi
 fi
 
-if [ -f $HOME/.ssh/id_ed25519.pub ]; then
+if [ -f "$HOME/.ssh/id_ed25519.pub" ]; then
   echoerr "an ssh key already exists"
 else
   echoerr "generating an ssh key"
-  #this part doesn't really work -- bash complains that the -N flag requires an argument
-  if ! ssh-keygen -t ed25519 -C "dan@dankulla.com" -q -N""; then
+  if ! ssh-keygen -t ed25519 -C "dan@dankulla.com" -q -P "" -f "$HOME/.ssh/id_ed25519"; then
     echoerr "there was a problem generating the ssh key"
     exit 1
   fi
@@ -52,5 +51,3 @@ else
     exit 1
   fi
 fi
-
-echoerr "installing pyenv"
