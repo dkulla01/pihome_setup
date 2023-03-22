@@ -51,5 +51,3 @@ else
     exit 1
   fi
 fi
-
-echoerr "installing pyenv"
