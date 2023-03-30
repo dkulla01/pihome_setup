@@ -3,9 +3,11 @@ set +ex
 
 DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-# since the path building here is dynamic, 
-# shellcheck disable=SC1091
+# shellcheck source=echoerr.sh
 source "$DIR/echoerr.sh"
+
+# shellcheck source=./install_package_if_absent.sh
+source "$DIR/install_package_if_absent.sh"
 
 
 echoerr "updating and upgrading apt..."
@@ -24,15 +26,7 @@ fi
 echoerr "apt is up to date. moving on"
 
 echoerr "checking git..."
-if ! command -v git; then
-  echoerr "git is not present, installing it now"
-  if ! sudo apt install git; then
-    echoerr "something went wrong installing git"
-    exit 1
-  else
-    echoerr "installed git"
-  fi
-fi
+install_package_if_absent 'git'
 
 if [ -f "$HOME/.ssh/id_ed25519.pub" ]; then
   echoerr "an ssh key already exists"
