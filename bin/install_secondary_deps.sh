@@ -61,6 +61,9 @@ echoerr 'making python 3.11 the global python'
 pyenv global 3.11
 
 echoerr 'restarting the shell to pick up the pyenv changes'
+
+# the aim is for this to be run on a host that already has a bashrc
+# shellcheck disable=1091
 source "$HOME/.bashrc"
 
 echoerr "installing docker"

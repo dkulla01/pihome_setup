@@ -3,7 +3,7 @@
 DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # since the path building here is dynamic, 
-# shellcheck disable=SC1091
+# shellcheck source=./echoerr.sh
 source "$DIR/echoerr.sh"
 
 echoerr 'pointing nameserver to a public nameserver'
