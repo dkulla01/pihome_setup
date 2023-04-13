@@ -48,7 +48,7 @@ else
 fi
 
 # ssh -T returns 1 on success, other nonzero code on failure
-ssh -T git@github.com 1>/dev/null 2>&1 || EXIT_CODE=$?
+ssh -o StrictHostKeyChecking=no -T git@github.com 1>/dev/null 2>&1 || EXIT_CODE=$?
 if [[ ${EXIT_CODE} != 1 ]]; then
   echoerr "failed to authenticate with github. you need to add your new ssh key to your github account"
   echoerr "> https://docs.github.com/en/repositories/creating-and-managing-repositories/troubleshooting-cloning-errors#check-your-ssh-access"

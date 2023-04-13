@@ -2,17 +2,21 @@
 
 some scripts to get a raspberry pi set up for running some home automation stuff
 
-## getting started:
-the first step is to add git to the raspberry pi and configure ssh keys. Do this
-by scp-ing [`bin/install_and_configure_git`](bin/install_and_configure_git.sh) to
-pi and running it:
+## Getting started:
+the first step is to add git to the raspberry pi and configure ssh keys. Get that done with:
 
 ```shell
-# on your dev machine:
-git pull # pull down the most recent version of this repo
-scp bin/install_and_configure_git pi@some_raspi_host:~
-
-#on the remote pi:
-cat ~/install_and_configure_git | bash
+curl https://raw.githubusercontent.com/dkulla01/pihome_setup/bin/install_and_configure_git.sh | sh
 ```
 
+## Keeping it going:
+Now that you have git installed and ssh keys linked with github, pull down this repo locally and install the secondary dependencies
+
+```shell
+git clone git@github.com:dkulla01/pihome_setup.git
+cd pihome_setup
+./bin/install_secondary_deps.sh
+```
+
+## Wrapping things up
+Now you have git installed alongside some core dependencies like docker and pyenv. You're free to figure things out from here. Maybe you want nginx? or maybe this is destined to be a node in a kubernetes cluster? Who knows? Now it's all up to you!

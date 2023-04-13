@@ -10,6 +10,10 @@ source "$DIR/echoerr.sh"
 # shellcheck source=./install_package_if_absent.sh
 source "$DIR/install_package_if_absent.sh"
 
+echoerr 'installing some utility packages I like to keep around'
+install_package_if_absent 'netcat'
+install_package_if_absent 'vim'
+
 echoerr 'installing packages required for pyenv to build pythons'
 
 install_package_if_absent 'libssl-dev'
