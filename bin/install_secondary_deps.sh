@@ -4,13 +4,15 @@ set +ex
 
 DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-# since the path building here is dynamic, 
-# shellcheck disable=SC1091
+# shellcheck source=./echoerr.sh
 source "$DIR/echoerr.sh"
 
-# since the path building here is dynamic, 
-# shellcheck disable=SC1091
+# shellcheck source=./install_package_if_absent.sh
 source "$DIR/install_package_if_absent.sh"
+
+echoerr 'installing some utility packages I like to keep around'
+install_package_if_absent 'netcat'
+install_package_if_absent 'vim'
 
 echoerr 'installing packages required for pyenv to build pythons'
 
@@ -52,6 +54,8 @@ echoerr "adding pyenv environment variables to .profile"
 
 # shellcheck disable=SC2016
 echoerr 'restarting the shell to pick up the changes to $PATH'
+# the aim is for this to be run on a host that already has a bashrc
+# shellcheck disable=1091
 source "$HOME/.bashrc"
 
 echoerr "installing the latest python 3.11 version"
