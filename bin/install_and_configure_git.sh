@@ -1,14 +1,23 @@
 #!/usr/bin/env bash
 set +ex
 
-DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+# a copy of echoerr so we can curl/download the script from raw.githubusercontent.com/...
+#!/usr/bin/env bash
+echoerr() {
+  printf "%s\n" "$*" >&2
+}
 
-# shellcheck source=echoerr.sh
-source "$DIR/echoerr.sh"
+# a copy of install_package_if_absent so we can curl/download the script from raw.githubusercontent.com/...
+install_package_if_absent() {
+  DEP_NAME=$1
 
-# shellcheck source=./install_package_if_absent.sh
-source "$DIR/install_package_if_absent.sh"
-
+  if dpkg-query -W -f='${Status}\n' "$DEP_NAME" 2> /dev/null | grep -q 'ok installed'; then
+    echoerr "$DEP_NAME is already installed. nothing to do here."
+  else
+    echoerr "$DEP_NAME is not yet installed. Installing it now."
+    sudo apt-get install --assume-yes "$DEP_NAME"
+  fi
+}
 
 echoerr "updating and upgrading apt..."
 
@@ -43,5 +52,7 @@ else
     echoerr "failed to authenticate with github. you need to add your new ssh key to your github account"
     echoerr "> https://docs.github.com/en/repositories/creating-and-managing-repositories/troubleshooting-cloning-errors#check-your-ssh-access"
     exit 1
+  else
+    echoer "It looks like your ssh key has been added to github. You're all set now!"
   fi
 fi
