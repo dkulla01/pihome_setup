@@ -54,5 +54,5 @@ if [[ ${EXIT_CODE} != 1 ]]; then
   echoerr "> https://docs.github.com/en/repositories/creating-and-managing-repositories/troubleshooting-cloning-errors#check-your-ssh-access"
   exit 1
 else
-  echoer "It looks like your ssh key has been added to github. You're all set now!"
+  echoerr "It looks like your ssh key has been added to github. You're all set now!"
 fi
