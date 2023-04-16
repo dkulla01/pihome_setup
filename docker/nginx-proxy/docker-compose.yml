@@ -1,0 +1,14 @@
+version: '3'
+
+
+# note: this must be started before other UIs. this nginx-proxy service does some
+# magic listening to the docker socket to figure out what containers' exposed ports
+# to proxy to
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+      # todo: set up SSL for this
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
