@@ -15,7 +15,7 @@ CERTS_DIR_SUFFIX="etc-nginx-proxy/ssl/certs"
 CERTS_DIR="$PARENT_DIR/$CERTS_DIR_SUFFIX"
 
 if [ -d "$CERTS_DIR" ]; then
-  mkdir -p"$CERTS_DIR"
+  mkdir -p "$CERTS_DIR"
 fi
 
 echoerr "creating self signed x509 cert for pihome nginx-proxy to use"
