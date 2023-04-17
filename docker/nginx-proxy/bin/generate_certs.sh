@@ -14,7 +14,7 @@ PARENT_DIR=$(dirname "$SCRIPT_DIR")
 CERTS_DIR_SUFFIX="etc-nginx-proxy/ssl/certs"
 CERTS_DIR="$PARENT_DIR/$CERTS_DIR_SUFFIX"
 
-if [ -d "$CERTS_DIR" ]; then
+if [ ! -d "$CERTS_DIR" ]; then
   echoerr "creating $CERTS_DIR"
   mkdir -p "$CERTS_DIR"
 fi
