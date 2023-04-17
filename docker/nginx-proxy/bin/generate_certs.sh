@@ -22,7 +22,8 @@ fi
 echoerr "creating self signed x509 cert for pihome nginx-proxy to use"
 
 openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
-  -keyout "$CERTS_DIR/pihome.run.key" -out "$CERTS_DIR/pihome.run.crt" -subj "/CN=pihome.run"
+  -keyout "$CERTS_DIR/pihome.run.key" -out "$CERTS_DIR/pihome.run.crt" -subj "/CN=pihome.run"\
+  -addext "subjectAltName=DNS:pihome.run,DNS:www.pihome.run,DNS:homebridge.pihome.run,DNS:pihole.pihome.run"
 
 echoerr "done creating the self-signed x509 cert. make sure this cert is in the appropriate \
 place for nginx-proxy to find (probably $CERTS_DIR_SUFFIX within whatever dir you run \
