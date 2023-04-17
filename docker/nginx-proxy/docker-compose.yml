@@ -12,3 +12,4 @@ services:
       # todo: set up SSL for this
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./etc-nginx-proxy/ssl/certs/:/etc/nginx/certs
