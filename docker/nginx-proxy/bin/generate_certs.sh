@@ -52,11 +52,11 @@ else
     "[alt_names]" \
     "DNS.1 = pihome.run" \
     "DNS.2 = pihole.pihome.run" \
-    "DNS.1 = homebridge.pihome" \
+    "DNS.3 = homebridge.pihome.run" \
   > "${CERT_CREATION_DIR}/pihome.run.ext"
 
-  openssl x509 -req -in "${CERT_CREATION_DIR}/pihome.run.csr" -CA "${CA_CREATION_DIR}/pihome-ca.pem" -CAkey "${CA_CREATION_DIR}/pihome-ca.key"\
-  -CAcreateserial -out "${CERT_CREATION_DIR}pihome.run.crt" -days 3650 -sha256 -extfile "${CERT_CREATION_DIR}/pihome.run.ext"
+  openssl x509 -trustout -req -in "${CERT_CREATION_DIR}/pihome.run.csr" -CA "${CA_CREATION_DIR}/pihome-ca.pem" -CAkey "${CA_CREATION_DIR}/pihome-ca.key" \
+  -CAcreateserial -out "${CERT_CREATION_DIR}/pihome.run.crt" -days 3650 -sha256 -extfile "${CERT_CREATION_DIR}/pihome.run.ext"
 fi
 
 #can't do the oneliner below because `openssl req` doesn't support -trustout
