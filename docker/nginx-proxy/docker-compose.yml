@@ -9,7 +9,9 @@ services:
     image: jwilder/nginx-proxy
     ports:
       - "80:80"
-      # todo: set up SSL for this
+      - "443:443"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./etc-nginx-proxy/ssl/certs/:/etc/nginx/certs
+    environment:
+      - 'CERT_NAME=pihome.run'

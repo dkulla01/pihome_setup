@@ -64,4 +64,9 @@ fi
 
 echoerr "done creating the self-signed x509 cert. make sure this cert is in the appropriate \
 place for nginx-proxy to find (probably $CERTS_DIR_SUFFIX within whatever dir you run \
-\`docker compose\` from)"
+\`docker compose\` from). Also add the pihome-ca.pem to whichever computers you plan to access the \
+pihome UIs from:"
+
+echoerr 'copy the CA cert to your machine. From your machine, run:'
+echoerr "        scp $(whoami)@$(hostname).local:${CA_CREATION_DIR}/pihome-ca.pem ~/Downloads"
+echoerr 'then tell your OS to recognize this CA cert and trust it (e.g. with Keychain Access on MacOS).'

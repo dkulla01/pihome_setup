@@ -14,7 +14,8 @@ services:
     environment:
       - 'TZ=America/New_York'
       # note: remember to run docker/pihole/bin/add_custom_dns.sh before starting this
-      - VIRTUAL_HOST=pihole.pihome.run
+      - 'VIRTUAL_HOST=pihole.pihome.run'
+      - 'CERT_NAME=CERT_NAME=pihome.run'
     volumes:
        - './etc-pihole/:/etc/pihole/'
        - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
