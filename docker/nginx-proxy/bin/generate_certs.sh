@@ -5,7 +5,7 @@ echoerr() {
 
 
 if ! command -v openssl &> /dev/null; then
-  echoerr "\`openssl\` is not installed on this machine. install it with apt-get"
+  echoerr "\`openssl\` is not installed on this machine. Install it with apt-get"
   exit 1
 fi
 
@@ -15,9 +15,9 @@ CERTS_DIR_SUFFIX="etc-nginx-proxy/ssl/certs"
 CA_CREATION_DIR="${PARENT_DIR}/ssl/ca"
 CERT_CREATION_DIR="${PARENT_DIR}/ssl/certs"
 
-if [ -d "$CA_CREATION_DIR" ]; then
-  echoerr "it looks like a certificates directory already exists: \`$CA_CREATION_DIR\`. If you need new certificates \
-  remove this directory."
+if [ -d "$CA_CREATION_DIR"  ] && [ -f "$CA_CREATION_DIR/pihome-ca.pem" ]; then
+  echoerr "it looks like we've already created the root certificate/ \`$CA_CREATION_DIR\` directory. If you need a new \
+  root certificate, remove this directory."
 else
   echoerr "creating $CA_CREATION_DIR"
   mkdir -p "$CA_CREATION_DIR"
@@ -33,8 +33,13 @@ else
 
   echoerr "updating the certificates store"
   sudo update-ca-certificates
+fi
 
-  echoerr "creating a certificate from our ca certificate"
+if [ -d "$CA_CREATION_DIR" ]; then
+  echoerr "it looks like a certificates directory already exists: \`$CA_CREATION_DIR\`. If you need new certificates \
+  remove this directory."
+else
+  echoerr "creating a certificate from our ca root certificate"
   mkdir -p "$CERT_CREATION_DIR"
 
   echoerr "creating self signed x509 cert for pihome nginx-proxy to use"
@@ -57,16 +62,13 @@ else
 
   openssl x509 -trustout -req -in "${CERT_CREATION_DIR}/pihome.run.csr" -CA "${CA_CREATION_DIR}/pihome-ca.pem" -CAkey "${CA_CREATION_DIR}/pihome-ca.key" \
   -CAcreateserial -out "${CERT_CREATION_DIR}/pihome.run.crt" -days 3650 -sha256 -extfile "${CERT_CREATION_DIR}/pihome.run.ext"
+
+  echoerr "done creating the self-signed x509 cert. make sure this cert is in the appropriate \
+  place for nginx-proxy to find (probably $CERTS_DIR_SUFFIX within whatever dir you run \
+  \`docker compose\` from). Also add the pihome-ca.pem to whichever computers you plan to access the \
+  pihome UIs from."
+
+  echoerr 'Copy the root certificate to your machine. From your machine, run:'
+  echoerr "        scp $(whoami)@$(hostname).local:${CA_CREATION_DIR}/pihome-ca.pem ~/Downloads"
+  echoerr 'then tell your OS to recognize this root certificate and trust it (e.g. with Keychain Access on MacOS).'
 fi
-
-#can't do the oneliner below because `openssl req` doesn't support -trustout
-# openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout "home.run.key" -out "home.run.crt" -subj "/CN=pihome.run" -addext "subjectAltName=DNS:pihome.run,DNS:www.pihome.run,DNS:homebridge.pihome.run,DNS:pihole.pihome.run"
-
-echoerr "done creating the self-signed x509 cert. make sure this cert is in the appropriate \
-place for nginx-proxy to find (probably $CERTS_DIR_SUFFIX within whatever dir you run \
-\`docker compose\` from). Also add the pihome-ca.pem to whichever computers you plan to access the \
-pihome UIs from:"
-
-echoerr 'copy the CA cert to your machine. From your machine, run:'
-echoerr "        scp $(whoami)@$(hostname).local:${CA_CREATION_DIR}/pihome-ca.pem ~/Downloads"
-echoerr 'then tell your OS to recognize this CA cert and trust it (e.g. with Keychain Access on MacOS).'
