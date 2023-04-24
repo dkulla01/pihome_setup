@@ -8,16 +8,24 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp"
-      - "80:80/tcp"
-      - "443:443/tcp"
     environment:
-      TZ: 'America/New_York'
+      - 'TZ=America/New_York'
+      # note: remember to run docker/pihole/bin/add_custom_dns.sh before starting this
+      - 'VIRTUAL_HOST=pihole.pihome.run'
+      # note: we want the container's internal port 80 exposed, but we don't
+      # want it mapped to one of the host's ports. The pihole UI runs on port 80 by default,
+      # and we need nginx-proxy to know about it, but we don't have the host's port 80
+      # exposed via a services.homebridge.ports item.
+      - 'VIRTUAL_PORT=80'
+      - 'CERT_NAME=CERT_NAME=pihome.run'
     volumes:
        - './etc-pihole/:/etc/pihole/'
        - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
     dns:
       - 127.0.0.1
       - 1.1.1.1
+    # note: this network_mode should point to the nginx-proxy's network
+    network_mode: nginx-proxy_default
     cap_add:
       - NET_ADMIN
     restart: unless-stopped

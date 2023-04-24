@@ -1,11 +1,23 @@
-version: '2'
+version: '3'
 services:
   homebridge:
     image: oznu/homebridge:latest
-    restart: always
-    network_mode: host
+    restart: unless-stopped
+    network_mode: nginx-proxy_default
     volumes:
       - ./volumes/homebridge:/homebridge
+    dns:
+      # pihole is handling DNS, so make sure it's running first
+      - 127.0.0.1
+    environment:
+      # note: remember to run docker/pihole/bin/add_custom_dns.sh before starting this
+      - 'VIRTUAL_HOST=homebridge.pihome.run'
+      # note: we want the container's internal port 8581 exposed, but we don't
+      # want it mapped to one of the host's ports. homebridge runs on port 8581 by default,
+      # and we need nginx-proxy to know about it, but we don't have the host's port 8581
+      # exposed via a services.homebridge.ports item.
+      - 'VIRTUAL_PORT=8581'
+      - 'CERT_NAME=pihome.run'
     logging:
       driver: json-file
       options:
