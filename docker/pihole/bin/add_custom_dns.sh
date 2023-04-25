@@ -26,6 +26,7 @@ cat <<EOF > "$CUSTOM_PIHOLE_DNS_FILE"
 $IP4 pihome.run
 $IP4 homebridge.pihome.run
 $IP4 pihole.pihome.run
+$IP4 zigbee2mqtt.pihome.run
 EOF
 
 echoerr "added ip4: $IP4 entries to $CUSTOM_PIHOLE_DNS_FILE"
