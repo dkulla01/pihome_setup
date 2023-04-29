@@ -6,6 +6,14 @@ services:
     network_mode: nginx-proxy_default
     volumes:
       - ./volumes/homebridge:/homebridge
+    ports:
+      # homebridge/apple homekit is big on using mDNS. in order to make that work, we need to let
+      # avahi-daemon on the host know how to advertise the homebridge ports that this container exposes
+      # https://www.devwithimagination.com/2020/02/02/running-homebridge-on-docker-without-host-network-mode/
+      # this shell script generates the appropriate avahi service files.
+      # https://github.com/dhutchison/container-images/blob/master/homebridge/generate_service.sh
+      - "homebridge-port:homebridge-port"
+      - "plugin-port:plugin-port"
     dns:
       # pihole is handling DNS, so make sure it's running first
       - 127.0.0.1
