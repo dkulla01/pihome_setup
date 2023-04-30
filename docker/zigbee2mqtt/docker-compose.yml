@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  mqtt:
+    image: eclipse-mosquitto:2.0
+    restart: unless-stopped
+    volumes:
+      - "./mosquitto-data:/mosquitto"
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    networks:
+      - nginx-proxy_default
+    command: "mosquitto -c /mosquitto/conf/mosquitto.conf"
+
+  zigbee2mqtt:
+    container_name: zigbee2mqtt
+    restart: unless-stopped
+    image: koenkk/zigbee2mqtt
+    volumes:
+      - ./zigbee2mqtt-data:/app/data
+      - /run/udev:/run/udev:ro
+    networks:
+      - nginx-proxy_default
+    environment:
+      - 'TZ=America/New_York'
+      - 'VIRTUAL_HOST=zigbee2mqtt.pihome.run'
+      - 'VIRTUAL_PORT=8080'
+      - 'CERT_NAME=pihome.run'
+    devices:
+      # note: this might be different on your machine, so check dmesg to find the zigbee usb device
+      - /dev/ttyUSB0:/dev/ttyUSB0
+
+networks:
+  nginx-proxy_default:
+    external: true

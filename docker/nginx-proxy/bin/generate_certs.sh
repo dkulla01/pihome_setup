@@ -35,7 +35,7 @@ else
   sudo update-ca-certificates
 fi
 
-if [ -d "$CA_CREATION_DIR" ]; then
+if [ -d "$CERT_CREATION_DIR" ]; then
   echoerr "it looks like a certificates directory already exists: \`$CA_CREATION_DIR\`. If you need new certificates \
   remove this directory."
 else
@@ -58,6 +58,7 @@ else
     "DNS.1 = pihome.run" \
     "DNS.2 = pihole.pihome.run" \
     "DNS.3 = homebridge.pihome.run" \
+    "DNS.4 = zigbee2mqtt.pihome.run" \
   > "${CERT_CREATION_DIR}/pihome.run.ext"
 
   openssl x509 -trustout -req -in "${CERT_CREATION_DIR}/pihome.run.csr" -CA "${CA_CREATION_DIR}/pihome-ca.pem" -CAkey "${CA_CREATION_DIR}/pihome-ca.key" \
