@@ -89,7 +89,7 @@ else
   echoerr "creating self signed x509 cert for mosquitto to use"
 
   openssl genrsa -out "${MOSQUITTO_CERT_CREATION_DIR}/server.key" 4096
-  openssl req -new -key "${MOSQUITTO_CERT_CREATION_DIR}/server.key"\
+  openssl req -new -key "${MOSQUITTO_CERT_CREATION_DIR}/server.key" \
     -subj "/C=US/ST=MA/CN=pihome.run" \
     -out "${MOSQUITTO_CERT_CREATION_DIR}/server.csr"
 
