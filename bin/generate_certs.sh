@@ -47,7 +47,10 @@ else
   echoerr "creating self signed x509 cert for pihome nginx-proxy to use"
 
   openssl genrsa -out "${NGINX_CERT_CREATION_DIR}/pihome.run.key" 4096
-  openssl req -new -key "${NGINX_CERT_CREATION_DIR}/pihome.run.key" -out "${NGINX_CERT_CREATION_DIR}/pihome.run.csr"
+  openssl req -new -key "${NGINX_CERT_CREATION_DIR}/pihome.run.key" \
+    -subj "/C=US/ST=MA/CN=pihome.run" \
+    -addext "subjectAltName = DNS:pihome.run, DNS:pihole.pihome.run, DNS:homebridge.pihome.run"\
+    -out "${NGINX_CERT_CREATION_DIR}/pihome.run.csr"
 
   echoerr "creating the x509 cert extension config file to attach the SANs"
   printf '%s\n' \
