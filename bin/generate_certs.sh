@@ -49,21 +49,10 @@ else
   openssl genrsa -out "${NGINX_CERT_CREATION_DIR}/pihome.run.key" 4096
   openssl req -new -key "${NGINX_CERT_CREATION_DIR}/pihome.run.key" \
     -subj "/C=US/ST=MA/CN=pihome.run" \
-    -addext "subjectAltName = DNS:pihome.run, DNS:pihole.pihome.run, DNS:homebridge.pihome.run"\
     -out "${NGINX_CERT_CREATION_DIR}/pihome.run.csr"
 
   echoerr "creating the x509 cert extension config file to attach the SANs"
   printf '%s\n' \
-    "[req]" \
-    "prompt = no" \
-    "distinguished_name = req_distinguished_name" \
-    "req_extensions = v3_req" \
-    "" \
-    "[req_distinguished_name]" \
-    "C = US" \
-    "ST = Masschusetts" \
-    "CN = pihome.run" \
-    "" \
     "authorityKeyIdentifier=keyid,issuer" \
     "basicConstraints=CA:FALSE" \
     "keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment" \
@@ -91,30 +80,21 @@ fi
 MOSQUITTO_CERT_CREATION_DIR="${CERT_CREATION_DIR}/mosquitto"
 
 if [ -d "$MOSQUITTO_CERT_CREATION_DIR" ]; then
-  echoerr "it looks like an nginx certificates directory already exists: \`$MOSQUITTO_CERT_CREATION_DIR\`. If you need new certificates \
+  echoerr "it looks like a mosquitto certificates directory already exists: \`$MOSQUITTO_CERT_CREATION_DIR\`. If you need new certificates \
   remove this directory."
 else
   echoerr "creating a mosquitto broker certificate from our ca root certificate"
   mkdir -p "$MOSQUITTO_CERT_CREATION_DIR"
 
-  echoerr "creating self signed x509 cert for pihome nginx-proxy to use"
+  echoerr "creating self signed x509 cert for mosquitto to use"
 
   openssl genrsa -out "${MOSQUITTO_CERT_CREATION_DIR}/server.key" 4096
-  openssl req -new -key "${MOSQUITTO_CERT_CREATION_DIR}/server.key" -out "${MOSQUITTO_CERT_CREATION_DIR}/server.csr"
+  openssl req -new -key "${MOSQUITTO_CERT_CREATION_DIR}/server.key"\
+    -subj "/C=US/ST=MA/CN=pihome.run" \
+    -out "${MOSQUITTO_CERT_CREATION_DIR}/server.csr"
 
   echoerr "creating the x509 cert extension config file to attach the SANs"
   printf '%s\n' \
-    "[req]" \
-    "prompt = no" \
-    "distinguished_name = req_distinguished_name" \
-    "req_extensions = v3_req" \
-    "" \
-    "[req_distinguished_name]" \
-    "C = US" \
-    "ST = Masschusetts" \
-    "CN = pihome.run" \
-    "" \
-    "[v3_req]"
     "authorityKeyIdentifier=keyid,issuer" \
     "basicConstraints=CA:FALSE" \
     "keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment" \
