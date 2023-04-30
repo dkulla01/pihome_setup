@@ -72,9 +72,6 @@ else
     "DNS.3 = homebridge.pihome.run" \
   > "${NGINX_CERT_CREATION_DIR}/pihome.run.ext"
 
-  openssl req -new -key "${NGINX_CERT_CREATION_DIR}/pihome.run.key" -out "${NGINX_CERT_CREATION_DIR}/pihome.run.csr" -extfile "${NGINX_CERT_CREATION_DIR}/pihome.run.ext"
-
-
   openssl x509 -trustout -req -in "${NGINX_CERT_CREATION_DIR}/pihome.run.csr" -CA "${CA_CREATION_DIR}/pihome-ca.pem" -CAkey "${CA_CREATION_DIR}/pihome-ca.key" \
   -CAcreateserial -out "${NGINX_CERT_CREATION_DIR}/pihome.run.crt" -days 3650 -sha256 -extfile "${NGINX_CERT_CREATION_DIR}/pihome.run.ext"
 
@@ -100,6 +97,7 @@ else
   echoerr "creating self signed x509 cert for pihome nginx-proxy to use"
 
   openssl genrsa -out "${MOSQUITTO_CERT_CREATION_DIR}/server.key" 4096
+  openssl req -new -key "${MOSQUITTO_CERT_CREATION_DIR}/server.key" -out "${MOSQUITTO_CERT_CREATION_DIR}/server.csr"
 
   echoerr "creating the x509 cert extension config file to attach the SANs"
   printf '%s\n' \
@@ -123,7 +121,6 @@ else
     "DNS.1 = pihome.run" \
 > "${MOSQUITTO_CERT_CREATION_DIR}/mosquitto.run.ext"
 
-  openssl req -new -key "${MOSQUITTO_CERT_CREATION_DIR}/server.key" -out "${MOSQUITTO_CERT_CREATION_DIR}/server.csr" -extfile "${MOSQUITTO_CERT_CREATION_DIR}/mosquitto.run.ext"
   openssl x509 -trustout -req -in "${MOSQUITTO_CERT_CREATION_DIR}/server.csr" -CA "${CA_CREATION_DIR}/pihome-ca.pem" -CAkey "${CA_CREATION_DIR}/pihome-ca.key" \
   -CAcreateserial -out "${MOSQUITTO_CERT_CREATION_DIR}/server.crt" -days 3650 -sha256 -extfile "${MOSQUITTO_CERT_CREATION_DIR}/mosquitto.run.ext"
 
