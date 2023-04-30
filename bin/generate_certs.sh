@@ -62,6 +62,7 @@ else
     "DNS.1 = pihome.run" \
     "DNS.2 = pihole.pihome.run" \
     "DNS.3 = homebridge.pihome.run" \
+    "DNS.4 = zigbee2mqtt.pihome.run" \
   > "${NGINX_CERT_CREATION_DIR}/pihome.run.ext"
 
   openssl x509 -trustout -req -in "${NGINX_CERT_CREATION_DIR}/pihome.run.csr" -CA "${CA_CREATION_DIR}/pihome-ca.pem" -CAkey "${CA_CREATION_DIR}/pihome-ca.key" \
