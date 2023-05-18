@@ -45,18 +45,22 @@ function build_certs() {
   local ca_key=$5
 
   if [ -d "$certs_dirname" ]; then
-    echoerr "it looks like a \`$cert_prefix\` certificates directory already exists: \`$certs_dirname\`. If you need new certificates \
-    remove this directory."
+    echoerr "it looks like a \`$cert_prefix\` certificates directory already exists: \`$certs_dirname\`."\
+    "If you need new certificates, remove this directory."
   else
-    echoerr "creating a \`$cert_prefix\` certificate from our ca root certificate (\`$ca_pemfile\`)"
+    echoerr "creating a \`$cert_prefix\` certificate in \`$certs_dirname\` from our ca root certificate (\`$ca_pemfile\`)"
     mkdir -p "$certs_dirname"
 
-    echoerr "creating a private key for \`$cert_prefix\`."
+    local cert_private_key_file="${certs_dirname}/${cert_prefix}.key"
+    echoerr "creating a private key for \`$cert_prefix\`: \`$cert_private_key_file\`."
 
-    openssl genrsa -out "${certs_dirname}/${cert_prefix}.key" 4096
-    openssl req -new -key "${certs_dirname}/${cert_prefix}" \
+    openssl genrsa -out "$cert_private_key_file" 4096
+
+    local csr_file="${certs_dirname}/${cert_prefix}.csr"
+    echoerr "creating a CSR file: "
+    openssl req -new -key "$cert_private_key_file" \
       -subj "/C=US/ST=MA/CN=pihome.run" \
-      -out "${certs_dirname}/${cert_prefix}.csr"
+      -out "$csr_file"
 
     echoerr "creating the x509 cert extension config file to attach the SANs"
     local extfile_name="${cert_prefix}.ext"
@@ -71,8 +75,10 @@ function build_certs() {
       "${delimited_sans}" \
   > "${certs_dirname}/${extfile_name}"
 
-    openssl x509 -trustout -req -in "${certs_dirname}/server.csr" -CA "${ca_pemfile}" -CAkey "${ca_key}" \
-    -CAcreateserial -out "${certs_dirname}/${cert_prefix}.crt" -days 3650 -sha256 -extfile "${certs_dirname}/${extfile_name}"
+    cert_file="${certs_dirname}/${cert_prefix}.crt"
+    echoerr "creating a certificate: ${cert_file}"
+    openssl x509 -trustout -req -in "$csr_file" -CA "${ca_pemfile}" -CAkey "${ca_key}" \
+    -CAcreateserial -out "$cert_file" -days 3650 -sha256 -extfile "${certs_dirname}/${extfile_name}"
   fi
 }
 
