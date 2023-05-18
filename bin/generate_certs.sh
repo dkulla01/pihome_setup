@@ -18,8 +18,8 @@ pihome_ca_pemfile="${ca_creation_dir}/pihome-ca.pem"
 
 
 if [ -d "$ca_creation_dir"  ] && [ -f "$ca_creation_dir/pihome-ca.pem" ]; then
-  echoerr "it looks like we've already created the root certificate/ \`$ca_creation_dir\` directory. If you need a new \
-  root certificate, remove this directory."
+  echoerr "it looks like we've already created the root certificate/ \`$ca_creation_dir\` directory." \
+  "If you need a new root certificate, remove this directory."
 else
   echoerr "creating $ca_creation_dir"
   mkdir -p "$ca_creation_dir"
