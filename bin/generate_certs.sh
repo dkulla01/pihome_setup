@@ -38,9 +38,10 @@ fi
 function build_certs() {
   local certs_dirname=$1
   local cert_prefix=$2
-  local delimited_sans=$3
-  local ca_pemfile=$4
-  local ca_key=$5
+  local cert_subject=$3
+  local delimited_sans=$4
+  local ca_pemfile=$5
+  local ca_key=$6
 
   if [ -d "$certs_dirname" ]; then
     echoerr "it looks like a \`$cert_prefix\` certificates directory already exists: \`$certs_dirname\`."\
@@ -57,7 +58,7 @@ function build_certs() {
     local csr_file="${certs_dirname}/${cert_prefix}.csr"
     echoerr "creating a CSR file: "
     openssl req -new -key "$cert_private_key_file" \
-      -subj "/C=US/ST=MA/CN=pihome.run" \
+      -subj "/C=US/ST=MA/CN=${cert_subject}" \
       -out "$csr_file"
 
     echoerr "creating the x509 cert extension config file to attach the SANs"
@@ -94,11 +95,11 @@ function build_dns_sans_block() {
 
 nginx_cert_creation_dir="${cert_creation_dir}/nginx"
 nginx_cert_sans="$(build_dns_sans_block 'pihome.run' 'pihole.pihome.run' 'homebridge.pihome.run' 'zigbee2mqtt.pihome.run')"
-build_certs "$nginx_cert_creation_dir" 'pihome.run' "$nginx_cert_sans" "${pihome_ca_pemfile}" "${pihome_ca_key}"
+build_certs "$nginx_cert_creation_dir" 'pihome.run' 'pihome.run' "$nginx_cert_sans" "${pihome_ca_pemfile}" "${pihome_ca_key}"
 
-mosquitto_cert_sans="$(build_dns_sans_block 'pihome.run')"
+mosquitto_cert_sans="$(build_dns_sans_block 'pihome.run' 'mqtt')"
 mosquitto_server_cert_creation_dir="${cert_creation_dir}/mosquitto-server"
-build_certs "$mosquitto_server_cert_creation_dir" 'server' "$mosquitto_cert_sans" "${pihome_ca_pemfile}" "${pihome_ca_key}"
+build_certs "$mosquitto_server_cert_creation_dir" 'server' 'pihome-mqtt-server.run' "$mosquitto_cert_sans" "${pihome_ca_pemfile}" "${pihome_ca_key}"
 
 mosquitto_client_cert_creation_dir="${cert_creation_dir}/mosquitto-client"
-build_certs "$mosquitto_client_cert_creation_dir" 'client' "$mosquitto_cert_sans" "${pihome_ca_pemfile}" "${pihome_ca_key}"
+build_certs "$mosquitto_client_cert_creation_dir" 'client' 'pihome-mqtt-client.run' "$mosquitto_cert_sans" "${pihome_ca_pemfile}" "${pihome_ca_key}"
