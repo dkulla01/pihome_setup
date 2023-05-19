@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     volumes:
       - "./mosquitto-data:/mosquitto"
+      - "./mosquitto-ssl:/mosquitto/conf/ssl"
     ports:
       - "1883:1883"
       - "9001:9001"
@@ -18,6 +19,7 @@ services:
     image: koenkk/zigbee2mqtt
     volumes:
       - ./zigbee2mqtt-data:/app/data
+      - ./zigbee2mqtt-ssl:/app/conf/ssl
       - /run/udev:/run/udev:ro
     networks:
       - nginx-proxy_default

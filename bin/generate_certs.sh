@@ -1,15 +1,13 @@
 #!/usr/bin/env bash
-echoerr() {
-  printf "%s\n" "$*" >&2
-}
 
+script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source "$script_dir/echoerr.sh"
 
 if ! command -v openssl &> /dev/null; then
   echoerr "\`openssl\` is not installed on this machine. Install it with apt-get"
   exit 1
 fi
 
-script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 parent_dir=$(dirname "$script_dir")
 ca_creation_dir="${parent_dir}/ssl/ca"
 cert_creation_dir="${parent_dir}/ssl/certs"
