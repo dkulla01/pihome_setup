@@ -8,6 +8,7 @@ services:
       - "./mosquitto-ssl:/mosquitto/conf/ssl"
     ports:
       - "1883:1883"
+      - "8883:8883"
       - "9001:9001"
     networks:
       - nginx-proxy_default
