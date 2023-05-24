@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 echoerr() {
-  printf "%s\n" "$*" >&2
+  printf -v joined_segments "%s " "$@"
+  printf "%s\n" "$joined_segments" >&2
 }

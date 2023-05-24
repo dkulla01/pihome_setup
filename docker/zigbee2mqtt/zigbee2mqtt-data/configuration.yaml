@@ -1,0 +1,15 @@
+mqtt:
+  base_topic: zigbee2mqtt
+  server: "mqtts://mqtt:8883"
+  keepalive: 60
+  reject_unauthorized: true
+  user: "!secret.yaml user"
+  password: "!secret.yaml password"
+  ca: "/app/conf/ssl/pihome-ca.pem"
+  key: "/app/conf/ssl/client.key"
+  cert: "/app/conf/ssl/client.crt"
+  version: 4
+serial:
+  port: /dev/ttyUSB0
+frontend:
+  port: 8080
