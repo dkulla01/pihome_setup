@@ -9,3 +9,7 @@ mqtt:
   key: "/app/conf/ssl/client.key"
   cert: "/app/conf/ssl/client.crt"
   version: 4
+serial:
+  port: /dev/ttyUSB0
+frontend:
+  port: 8080
