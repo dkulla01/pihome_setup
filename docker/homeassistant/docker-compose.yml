@@ -17,7 +17,7 @@ services:
       # note: this might be different on your machine, so check dmesg to find the zigbee usb device
       - /dev/ttyUSB0:/dev/ttyUSB0
     environment:
-      - "VIRTUAL_PORT=1883"
+      - "VIRTUAL_PORT=8123"
       - "VIRTUAL_HOST=homeassistant.pihome.run"
 
 networks:
