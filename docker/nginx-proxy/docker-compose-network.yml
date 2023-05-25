@@ -1,0 +1,10 @@
+version: '3'
+
+networks:
+  nginx-proxy:
+    driver: default
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24
+          ip_range: 172.22.0.0/24
+          gateway: 172.22.0.1
