@@ -1,0 +1,25 @@
+version: '3'
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - ./homeassistant-config:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    # we'll need a custom avahi daemon entry mapping to this service since we're not using the host network mode
+    networks:
+      - nginx-proxy_default
+    # instead of running privileged, figure out which USB devices
+    # to bind to this container  (e.g. the usb-zigbee adapter)
+    # privileged: true
+    devices:
+      # note: this might be different on your machine, so check dmesg to find the zigbee usb device
+      - /dev/ttyUSB0:/dev/ttyUSB0
+    environment:
+      - "VIRTUAL_PORT=1883"
+      - "VIRTUAL_HOST=homeassistant.pihome.run"
+
+networks:
+  nginx-proxy_default:
+    external: true
