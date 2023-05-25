@@ -15,3 +15,13 @@ services:
       - ./etc-nginx-proxy/ssl/certs/:/etc/nginx/certs
     environment:
       - 'CERT_NAME=pihome.run'
+    networks:
+      nginx-proxy:
+        ipv4_address: 172.22.0.10
+
+networks:
+  nginx-proxy:
+    name: nginx-proxy
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24

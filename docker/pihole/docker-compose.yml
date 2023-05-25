@@ -24,8 +24,13 @@ services:
     dns:
       - 127.0.0.1
       - 1.1.1.1
-    # note: this network_mode should point to the nginx-proxy's network
-    network_mode: nginx-proxy_default
+    # note: this network should point to the nginx-proxy's network
+    networks:
+      - nginx-proxy
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
+
+networks:
+  nginx-proxy:
+    external: true

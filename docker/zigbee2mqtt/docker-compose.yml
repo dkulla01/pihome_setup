@@ -11,7 +11,7 @@ services:
       - "8883:8883"
       - "9001:9001"
     networks:
-      - nginx-proxy_default
+      - nginx-proxy
     command: "mosquitto -c /mosquitto/conf/mosquitto.conf"
 
   zigbee2mqtt:
@@ -23,7 +23,7 @@ services:
       - ./zigbee2mqtt-ssl:/app/conf/ssl
       - /run/udev:/run/udev:ro
     networks:
-      - nginx-proxy_default
+      - nginx-proxy
     environment:
       - 'TZ=America/New_York'
       - 'VIRTUAL_HOST=zigbee2mqtt.pihome.run'
@@ -34,5 +34,5 @@ services:
       - /dev/ttyUSB0:/dev/ttyUSB0
 
 networks:
-  nginx-proxy_default:
+  nginx-proxy:
     external: true
