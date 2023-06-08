@@ -18,7 +18,7 @@ services:
       traefik-net:
         ipv4_address: 172.22.0.10
 networks:
-  nginx-proxy:
+  traefik-net:
     name: traefik-net
     ipam:
       config:
