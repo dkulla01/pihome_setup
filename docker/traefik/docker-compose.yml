@@ -4,8 +4,6 @@ services:
   reverse-proxy:
     # The official v2 Traefik docker image
     image: traefik:v2.10
-    # Enables the web UI and tells Traefik to listen to docker
-    command: --api.insecure=true
     ports:
       # The HTTP port
       - "80:80"
@@ -21,6 +19,7 @@ services:
 networks:
   traefik-net:
     name: traefik-net
+    driver: bridge
     ipam:
       config:
         - subnet: 172.22.0.0/24
