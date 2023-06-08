@@ -18,6 +18,11 @@ services:
       # exposed via a services.homebridge.ports item.
       - 'VIRTUAL_PORT=80'
       - 'CERT_NAME=CERT_NAME=pihome.run'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pihole.rule=Host(`pihole.pihome.run`)"
+      - "traefik.http.routers.pihole.entrypoints=web"
+      - "traefik.http.services.cal.loadbalancer.server.port=80"
     volumes:
        - './etc-pihole/:/etc/pihole/'
        - './etc-dnsmasq.d/:/etc/dnsmasq.d/'

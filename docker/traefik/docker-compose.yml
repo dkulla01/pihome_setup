@@ -14,3 +14,12 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      traefik-net:
+        ipv4_address: 172.22.0.10
+networks:
+  nginx-proxy:
+    name: traefik-net
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24
