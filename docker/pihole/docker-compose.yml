@@ -23,6 +23,7 @@ services:
       - "traefik.http.routers.pihole.rule=Host(`pihole.pihome.run`)"
       - "traefik.http.routers.pihole.entrypoints=web"
       - "traefik.http.services.pihole.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik-net"
     volumes:
        - './etc-pihole/:/etc/pihole/'
        - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
