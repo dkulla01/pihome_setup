@@ -22,7 +22,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.pihole.rule=Host(`pihole.pihome.run`)"
       - "traefik.http.routers.pihole.entrypoints=web"
-      - "traefik.http.services.cal.loadbalancer.server.port=80"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
     volumes:
        - './etc-pihole/:/etc/pihole/'
        - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
@@ -30,7 +30,11 @@ services:
       - 127.0.0.1
       - 1.1.1.1
     # note: this network_mode should point to the nginx-proxy's network
-    network_mode: nginx-proxy_default
+    networks:
+      - traefik-net
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
+networks:
+  traefik-net:
+    external: true
