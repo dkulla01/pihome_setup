@@ -2,7 +2,8 @@ api:
   insecure: true
 
 providers:
-  docker: {}
+  docker:
+    exposedbydefault: false
 
 log:
   level: INFO # DEBUG, INFO, WARNING, ERROR, CRITICAL
