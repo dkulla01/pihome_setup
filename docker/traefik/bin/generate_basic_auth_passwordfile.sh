@@ -12,7 +12,7 @@ source "$main_scripts_dir/echoerr.sh"
 
 traefik_auth_username=
 if [ -z "$1" ]; then
-  echoerr "You did not pass in a mosquitto username. Using the default username \`pi\`"
+  echoerr "You did not pass in a username. Using the default username \`pi\`"
   traefik_auth_username='pi'
 else
   traefik_auth_username=$1
@@ -20,7 +20,7 @@ else
 fi
 
 traefik_passwd_dirname='auth'
-traefik_passwd_filename='passwordfile'
+traefik_passwd_filename='users'
 etc_traefik_dirname='etc-traefik'
 traefik_passwd_dir="${traefik_root_dir}/${etc_traefik_dirname}/${traefik_passwd_dirname}"
 traefik_passwd_file="${traefik_passwd_dir}/${traefik_passwd_filename}"

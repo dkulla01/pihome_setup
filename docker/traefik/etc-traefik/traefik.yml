@@ -5,8 +5,13 @@ providers:
   docker:
     exposedbydefault: false
 tls:
-  - certFile: /etc-traefik/ssl/certs/pihome.run.crt
-    keyFile: /etc-traefik/ssl/certs/pihome.run.key
+  - certFile: /etc/traefik/ssl/certs/pihome.run.crt
+    keyFile: /etc/traefik/ssl/certs/pihome.run.key
+http:
+  middlewares:
+    test-auth:
+      basicAuth:
+        usersFile: /etc/traefik/auth/users
 log:
   level: INFO # DEBUG, INFO, WARNING, ERROR, CRITICAL
   format: common # common, json, logfmt
