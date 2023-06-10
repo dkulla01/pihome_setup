@@ -25,6 +25,7 @@ install_package_if_absent 'libbz2-dev'
 install_package_if_absent 'libreadline-dev'
 install_package_if_absent 'libsqlite3-dev'
 install_package_if_absent 'liblzma-dev'
+install_package_if_absent 'apache2-utils' # needed for htpasswd
 
 echoerr 'done installing packages required for pyenv to build pythons.'
 
