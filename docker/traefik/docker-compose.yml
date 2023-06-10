@@ -5,8 +5,8 @@ services:
     # The official v2 Traefik docker image
     image: traefik:v2.10
     ports:
-      # The HTTP port
       - "80:80"
+      - "443:443"
       # The Web UI (enabled by --api.insecure=true)
       - "8080:8080"
     volumes:
@@ -16,6 +16,11 @@ services:
     networks:
       traefik-net:
         ipv4_address: 172.22.0.10
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.api.service=api@internal"
+      # - "traefik.http.routers.api.middlewares=auth"
 networks:
   traefik-net:
     name: traefik-net
