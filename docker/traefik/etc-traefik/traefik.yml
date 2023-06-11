@@ -4,13 +4,15 @@ api:
 providers:
   docker:
     exposedbydefault: false
-tls:
-  - certFile: /etc/traefik/ssl/certs/pihome.run.crt
-    keyFile: /etc/traefik/ssl/certs/pihome.run.key
+  
+  file:
+    filename: /etc/traefik/dynamic_config.yml
+    watch: true
 
 serversTransport:
   rootCAs:
    - /etc/traefik/ssl/certs/pihome-ca.pem
+
 http:
   middlewares:
     basic-auth:

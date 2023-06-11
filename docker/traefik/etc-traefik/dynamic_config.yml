@@ -1,0 +1,3 @@
+tls:
+  - certFile: /etc/traefik/ssl/certs/pihome.run.crt
+    keyFile: /etc/traefik/ssl/certs/pihome.run.key
