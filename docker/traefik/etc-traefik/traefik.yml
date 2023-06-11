@@ -7,13 +7,17 @@ providers:
 tls:
   - certFile: /etc/traefik/ssl/certs/pihome.run.crt
     keyFile: /etc/traefik/ssl/certs/pihome.run.key
+
+serversTransport:
+  rootCAs:
+   - /etc/traefik/ssl/certs/pihome-ca.pem
 http:
   middlewares:
-    test-auth:
+    basic-auth:
       basicAuth:
         usersFile: /etc/traefik/auth/users
 log:
-  level: INFO # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: DEBUG # DEBUG, INFO, WARNING, ERROR, CRITICAL
   format: common # common, json, logfmt
   filePath: /var/log/traefik/traefik.log
 
@@ -24,6 +28,11 @@ accesslog:
 entryPoints:
   web:
     address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
 
   websecure:
     address: ":443"
