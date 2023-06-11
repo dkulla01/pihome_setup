@@ -6,7 +6,7 @@ providers:
     exposedbydefault: false
   
   file:
-    filename: /etc/traefik/dynamic_config.yml
+    fileName: /etc/traefik/dynamic_config.yml
     watch: true
 
 serversTransport:
