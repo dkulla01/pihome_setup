@@ -93,9 +93,9 @@ function build_dns_sans_block() {
 }
 
 
-nginx_cert_creation_dir="${cert_creation_dir}/nginx"
-nginx_cert_sans="$(build_dns_sans_block 'pihome.run' 'pihole.pihome.run' 'homebridge.pihome.run' 'zigbee2mqtt.pihome.run')"
-build_certs "$nginx_cert_creation_dir" 'pihome.run' 'pihome.run' "$nginx_cert_sans" "${pihome_ca_pemfile}" "${pihome_ca_key}"
+traefik_cert_creation_dir="${cert_creation_dir}/traefik"
+traefik_cert_sans="$(build_dns_sans_block 'pihome.run' 'traefik.pihome.run' 'pihole.pihome.run' 'homebridge.pihome.run' 'zigbee2mqtt.pihome.run')"
+build_certs "$traefik_cert_creation_dir" 'pihome.run' 'pihome.run' "$traefik_cert_sans" "${pihome_ca_pemfile}" "${pihome_ca_key}"
 
 mosquitto_cert_sans="$(build_dns_sans_block 'pihome.run' 'mqtt')"
 mosquitto_server_cert_creation_dir="${cert_creation_dir}/mosquitto-server"
