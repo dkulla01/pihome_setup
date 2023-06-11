@@ -15,7 +15,7 @@ serversTransport:
 
 http:
   middlewares:
-    basic-auth:
+    traefik-auth:
       basicAuth:
         usersFile: /etc/traefik/auth/users
 log:
