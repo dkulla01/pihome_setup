@@ -13,11 +13,6 @@ serversTransport:
   rootCAs:
     - /etc/traefik/ssl/certs/pihome-ca.pem
 
-http:
-  middlewares:
-    traefik-auth:
-      basicAuth:
-        usersFile: /etc/traefik/auth/users
 log:
   level: DEBUG # DEBUG, INFO, WARNING, ERROR, CRITICAL
   format: common # common, json, logfmt
