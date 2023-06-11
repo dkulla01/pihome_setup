@@ -4,14 +4,14 @@ api:
 providers:
   docker:
     exposedbydefault: false
-  
+
   file:
-    fileName: /etc/traefik/dynamic_config.yml
+    directory: /etc/traefik/config
     watch: true
 
 serversTransport:
   rootCAs:
-   - /etc/traefik/ssl/certs/pihome-ca.pem
+    - /etc/traefik/ssl/certs/pihome-ca.pem
 
 http:
   middlewares:
