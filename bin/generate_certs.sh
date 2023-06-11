@@ -76,7 +76,7 @@ function build_certs() {
 
     cert_file="${certs_dirname}/${cert_prefix}.crt"
     echoerr "creating a certificate: ${cert_file}"
-    openssl x509 -trustout -req -in "$csr_file" -CA "${ca_pemfile}" -CAkey "${ca_key}" \
+    openssl x509 -req -in "$csr_file" -CA "${ca_pemfile}" -CAkey "${ca_key}" \
     -CAcreateserial -out "$cert_file" -days 3650 -sha256 -extfile "${certs_dirname}/${extfile_name}"
   fi
 }
