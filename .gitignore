@@ -1,3 +1,4 @@
 get-docker.sh
 ssl/
 mosquitto-passwd/
+auth/
