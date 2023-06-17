@@ -18,8 +18,8 @@ ca_creation_dir="${parent_dir}/ssl/ca"
 cert_creation_dir="${parent_dir}/ssl/certs"
 pihome_ca_key="${ca_creation_dir}/pihome-ca.key"
 pihome_ca_pemfile="${ca_creation_dir}/pihome-ca.pem"
-pihome_sans_domains_file="$(script_dir)/pihome_domains.json"
-mosquitto_sans_domains_file="$(script_dir)/mosquitto_domains.json"
+pihome_sans_domains_file="${script_dir})/pihome_domains.json"
+mosquitto_sans_domains_file="${script_dir}/mosquitto_domains.json"
 
 
 if [ -d "$ca_creation_dir"  ] && [ -f "$ca_creation_dir/pihome-ca.pem" ]; then
