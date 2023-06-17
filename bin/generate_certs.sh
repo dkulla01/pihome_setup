@@ -18,7 +18,7 @@ ca_creation_dir="${parent_dir}/ssl/ca"
 cert_creation_dir="${parent_dir}/ssl/certs"
 pihome_ca_key="${ca_creation_dir}/pihome-ca.key"
 pihome_ca_pemfile="${ca_creation_dir}/pihome-ca.pem"
-pihome_sans_domains_file="${script_dir})/pihome_domains.json"
+pihome_sans_domains_file="${script_dir}/pihome_domains.json"
 mosquitto_sans_domains_file="${script_dir}/mosquitto_domains.json"
 
 
@@ -90,7 +90,7 @@ function build_certs() {
 
 function build_dns_sans_block() {
   local domain_json_file=$1
-  jq '. | to_entries | .[] | "DNS.\(.key + 1) = \(.value)"' "$domain_json_file"
+  jq --raw-output '. | to_entries | .[] | "DNS.\(.key + 1) = \(.value)"' "$domain_json_file"
 }
 
 traefik_cert_creation_dir="${cert_creation_dir}/traefik"
