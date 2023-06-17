@@ -16,13 +16,13 @@ services:
         ipv4_address: 172.22.0.10
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik_https.rule=Host(`traefik.docker.localhost`)"
+      - "traefik.http.routers.traefik_https.rule=Host(`traefik-dashboard.pihome.run`)"
       - "traefik.http.routers.traefik_https.entrypoints=websecure"
       - "traefik.http.routers.traefik_https.tls=true"
       - "traefik.http.routers.traefik_https.service=api@internal"
       - "traefik.http.routers.traefik_https.middlewares=traefik-auth@file"
 
-      - "traefik.http.routers.http_traefik.rule=Host(`traefik.docker.localhost`)"
+      - "traefik.http.routers.http_traefik.rule=Host(`traefik-dashboard.pihome.run`)"
       - "traefik.http.routers.http_traefik.entrypoints=web"
       - "traefik.http.routers.http_traefik.middlewares=https_redirect"
 
