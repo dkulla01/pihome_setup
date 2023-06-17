@@ -21,7 +21,7 @@ services:
        - './etc-dnsmasq.d/:/etc/dnsmasq.d'
     networks:
       traefik-net:
-        ipv4_address: 172.22.0.1
+        ipv4_address: 172.22.0.11
     restart: unless-stopped
 networks:
   traefik-net:
