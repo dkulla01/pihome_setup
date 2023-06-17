@@ -20,7 +20,8 @@ services:
        - './etc-pihole/:/etc/pihole'
        - './etc-dnsmasq.d/:/etc/dnsmasq.d'
     networks:
-      - traefik-net
+      traefik-net:
+        ipv4_address: 172.22.0.1
     restart: unless-stopped
 networks:
   traefik-net:
