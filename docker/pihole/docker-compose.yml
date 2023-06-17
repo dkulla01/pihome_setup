@@ -17,7 +17,6 @@ services:
       - "traefik.http.services.pihole.loadbalancer.server.port=80"
       - "traefik.docker.network=traefik-net"
     volumes:
-       - './etc-pihole/:/etc/pihole/'
        - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
     dns:
       - 127.0.0.1
