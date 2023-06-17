@@ -14,7 +14,7 @@ if ! command -v ip &> /dev/null; then
   exit 1
 fi
 
-dnsmasq_conf_dir="${pihole_root_dir}/dnsmasq.d"
+dnsmasq_conf_dir="${pihole_root_dir}/etc-dnsmasq.d"
 
 ip4=$(ip -o -4  addr list eth0 | awk '{print $4}' | cut -d/ -f1)
 
