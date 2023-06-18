@@ -3,31 +3,19 @@ services:
   homebridge:
     image: oznu/homebridge:latest
     restart: unless-stopped
-    network_mode: nginx-proxy_default
+    networks:
+      hostnet: {}
     volumes:
       - ./volumes/homebridge:/homebridge
     ports:
-      # homebridge/apple homekit is big on using mDNS. in order to make that work, we need to let
-      # avahi-daemon on the host know how to advertise the homebridge ports that this container exposes
-      # https://www.devwithimagination.com/2020/02/02/running-homebridge-on-docker-without-host-network-mode/
-      # this shell script generates the appropriate avahi service files.
-      # https://github.com/dhutchison/container-images/blob/master/homebridge/generate_service.sh
-      - "homebridge-port:homebridge-port"
-      - "plugin-port:plugin-port"
-    dns:
-      # pihole is handling DNS, so make sure it's running first
-      - 127.0.0.1
-    environment:
-      # note: remember to run docker/pihole/bin/add_custom_dns.sh before starting this
-      - 'VIRTUAL_HOST=homebridge.pihome.run'
-      # note: we want the container's internal port 8581 exposed, but we don't
-      # want it mapped to one of the host's ports. homebridge runs on port 8581 by default,
-      # and we need nginx-proxy to know about it, but we don't have the host's port 8581
-      # exposed via a services.homebridge.ports item.
-      - 'VIRTUAL_PORT=8581'
-      - 'CERT_NAME=pihome.run'
+      - "8581:8581"
     logging:
       driver: json-file
       options:
         max-size: "10mb"
         max-file: "1"
+
+networks:
+  hostnet:
+    external: true
+    name: host
