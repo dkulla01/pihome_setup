@@ -12,7 +12,7 @@ services:
       - 'TZ=America/New_York'
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pihole.rule=Host(`pihole.pihome.run`)"
+      - "traefik.http.routers.pihole.rule=(Host(`pihole.pihome.run`) && PathPrefix(`/admin`))"
       - "traefik.http.routers.pihole.entrypoints=websecure"
       - "traefik.http.routers.pihole.tls=true"
       - "traefik.http.services.pihole.loadbalancer.server.port=80"
