@@ -16,7 +16,6 @@ serversTransport:
 log:
   level: DEBUG # DEBUG, INFO, WARNING, ERROR, CRITICAL
   format: common # common, json, logfmt
-  filePath: /var/log/traefik/traefik.log
 
 accesslog:
   format: common # common, json, logfmt
@@ -30,6 +29,7 @@ entryPoints:
         entryPoint:
           to: websecure
           scheme: https
+          permanent: true
 
   websecure:
     address: ":443"

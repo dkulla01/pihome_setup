@@ -13,11 +13,14 @@ services:
       - ./etc-traefik:/etc/traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik-dashboard.pihome.run`)"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik-dashboard.pihome.run`, `td.pihome.run`)"
       - "traefik.http.routers.traefik-dashboard.entryPoints=websecure"
       - "traefik.http.routers.traefik-dashboard.tls=true"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
-      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth@file"
+      - "traefik.http.middlewares.redirect-td.redirectregex.regex=^https://td.pihome.run/(.*)"
+      - "traefik.http.middlewares.redirect-td.redirectregex.replacement=https://traefik-dashboard.pihome.run/$${1}"
+      - "traefik.http.middlewares.redirect-td.redirectregex.permanent=true"
+      - "traefik.http.routers.traefik-dashboard.middlewares=redirect-td, traefik-auth@file"
       - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
     networks:
       traefik-net:
