@@ -3,19 +3,19 @@ services:
   homebridge:
     image: oznu/homebridge:latest
     restart: unless-stopped
-    networks:
-      hostnet: {}
+    network_mode: "host"
     volumes:
       - ./volumes/homebridge:/homebridge
-    ports:
-      - "8581:8581"
+#    ports:
+#      - "8581:8581"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homebridge.rule=Host(`homebridge.pihome.run`)"
+      - "traefik.http.routers.homebridge.entrypoints=websecure"
+      - "traefik.http.routers.homebridge.tls=true"
+      - "traefik.http.services.homebridge.loadbalancer.server.port=8581"
     logging:
       driver: json-file
       options:
         max-size: "10mb"
         max-file: "1"
-
-networks:
-  hostnet:
-    external: true
-    name: host
