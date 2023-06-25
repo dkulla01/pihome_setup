@@ -11,7 +11,8 @@ services:
       - "8883:8883"
       - "9001:9001"
     networks:
-      - nginx-proxy_default
+      traefik-net:
+        ipv4_address: 172.22.0.12
     command: "mosquitto -c /mosquitto/conf/mosquitto.conf"
 
   zigbee2mqtt:
@@ -23,16 +24,25 @@ services:
       - ./zigbee2mqtt-ssl:/app/conf/ssl
       - /run/udev:/run/udev:ro
     networks:
-      - nginx-proxy_default
+      traefik-net:
+        ipv4_address: 172.22.0.13
     environment:
       - 'TZ=America/New_York'
-      - 'VIRTUAL_HOST=zigbee2mqtt.pihome.run'
-      - 'VIRTUAL_PORT=8080'
-      - 'CERT_NAME=pihome.run'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.z2m.rule=Host(`zigbee2mqtt.pihome.run`)"
+      - "traefik.http.routers.z2m.entrypoints=websecure"
+      - "traefik.http.routers.z2m.tls=true"
+      - "traefik.http.services.z2m.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik-net"
+      - "traefik.http.middlewares.redirect-z2m.redirectregex.regex=^https://z2m.pihome.run/(.*)"
+      - "traefik.http.middlewares.redirect-z2m.redirectregex.replacement=https://zigbee2mqtt.pihome.run/$${1}"
+      - "traefik.http.middlewares.redirect-z2m.redirectregex.permanent=true"
+      - "traefik.http.routers.z2m.middlewares=redirect-z2m"
     devices:
       # note: this might be different on your machine, so check dmesg to find the zigbee usb device
       - /dev/ttyUSB0:/dev/ttyUSB0
 
 networks:
-  nginx-proxy_default:
+  traefik-net:
     external: true
