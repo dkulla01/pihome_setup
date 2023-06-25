@@ -30,7 +30,7 @@ services:
       - 'TZ=America/New_York'
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.z2m.rule=Host(`zigbee2mqtt.pihome.run`)"
+      - "traefik.http.routers.z2m.rule=Host(`zigbee2mqtt.pihome.run`, `z2m.pihome.run`)"
       - "traefik.http.routers.z2m.entrypoints=websecure"
       - "traefik.http.routers.z2m.tls=true"
       - "traefik.http.services.z2m.loadbalancer.server.port=8080"
