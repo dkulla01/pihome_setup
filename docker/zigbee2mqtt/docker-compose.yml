@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
     image: koenkk/zigbee2mqtt
     volumes:
-      - ./zigbee2mqtt-data:/app/data
+      - ./zigbee2mqtt-data:/app/dataa
       - ./zigbee2mqtt-ssl:/app/conf/ssl
       - /run/udev:/run/udev:ro
     networks:
@@ -40,7 +40,7 @@ services:
       - "traefik.http.middlewares.redirect-z2m.redirectregex.permanent=true"
       - "traefik.http.routers.z2m.middlewares=redirect-z2m"
     devices:
-      # specify the adapter path from zigbee2mqtt-data/adapter.yaml
+      # specify the adapter path from zigbee2mqtt-data/configuration.yaml serial.port
       - /dev/serial/by-id/PLACEHOLDER:/dev/serial/by-id/PLACEHOLDER
 
 networks:
