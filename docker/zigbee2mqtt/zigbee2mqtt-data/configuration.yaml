@@ -10,6 +10,9 @@ mqtt:
   cert: "/app/conf/ssl/client.crt"
   version: 4
 serial:
-  port: /dev/ttyUSB0
+  port: "!adapter.yaml adapter_path"
 frontend:
   port: 8080
+permit_join: false
+advanced:
+  network_key: "GENERATE"

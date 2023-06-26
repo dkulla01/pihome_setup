@@ -1,0 +1,2 @@
+# The path of the zigbee adapter within /dev/serial/by-id
+adapter_path: /dev/serial/by-id/PLACEHOLDER

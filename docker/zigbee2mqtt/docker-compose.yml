@@ -40,8 +40,8 @@ services:
       - "traefik.http.middlewares.redirect-z2m.redirectregex.permanent=true"
       - "traefik.http.routers.z2m.middlewares=redirect-z2m"
     devices:
-      # note: this might be different on your machine, so check dmesg to find the zigbee usb device
-      - /dev/ttyUSB0:/dev/ttyUSB0
+      # specify the adapter path from zigbee2mqtt-data/adapter.yaml
+      - /dev/serial/by-id/PLACEHOLDER:/dev/serial/by-id/PLACEHOLDER
 
 networks:
   traefik-net:
