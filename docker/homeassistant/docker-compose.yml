@@ -8,3 +8,9 @@ services:
     restart: unless-stopped
     privileged: true
     network_mode: host
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homeassistant.rule=Host(`homeassistant.pihome.run`)"
+      - "traefik.http.routers.homebridge.entrypoints=websecure"
+      - "traefik.http.routers.homebridge.tls=true"
+      - "traefik.http.services.homebridge.loadbalancer.server.port=8123"
