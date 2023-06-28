@@ -7,10 +7,10 @@ mosquitto-ssl/
 zigbee2mqtt-ssl/
 **/zigbee2mqtt-data/coordinator_backup.json
 **/zigbee2mqtt-data/database.db
-zigbee2mqtt-data/log/
-zigbee2mqtt-data/state.json
-homebridge/volumes
-**/homeassistant.log*
-**/homeassistant_v2.db*
-homeassistant-config/.storage/
-homeassistant-config/blueprints/
+**/zigbee2mqtt-data/log/
+**/zigbee2mqtt-data/state.json
+**/homebridge/volumes
+**/home-assistant.log*
+**/home-assistant_v2.db*
+**/homeassistant-config/.storage/
+**/homeassistant-config/blueprints/
