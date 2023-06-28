@@ -16,3 +16,4 @@ frontend:
 permit_join: false
 advanced:
   network_key: "GENERATE"
+homeassistant: true

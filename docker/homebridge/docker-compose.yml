@@ -6,8 +6,6 @@ services:
     network_mode: "host"
     volumes:
       - ./volumes/homebridge:/homebridge
-#    ports:
-#      - "8581:8581"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.homebridge.rule=Host(`homebridge.pihome.run`)"
