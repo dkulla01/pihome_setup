@@ -1,0 +1,35 @@
+api:
+  dashboard: true
+
+providers:
+  docker:
+    exposedbydefault: false
+
+  file:
+    directory: /etc/traefik/config
+    watch: true
+
+serversTransport:
+  rootCAs:
+    - /etc/traefik/ssl/certs/pihome-ca.pem
+
+log:
+  level: DEBUG # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: common # common, json, logfmt
+
+accesslog:
+  format: common # common, json, logfmt
+  filePath: /var/log/traefik/access.log
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+
+  websecure:
+    address: ":443"

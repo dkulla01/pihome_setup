@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  reverse-proxy:
+    # The official v2 Traefik docker image
+    image: traefik:v2.10
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./etc-traefik:/etc/traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik-dashboard.pihome.run`, `td.pihome.run`)"
+      - "traefik.http.routers.traefik-dashboard.entryPoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls=true"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.middlewares.redirect-td.redirectregex.regex=^https://td.pihome.run/(.*)"
+      - "traefik.http.middlewares.redirect-td.redirectregex.replacement=https://traefik-dashboard.pihome.run/$${1}"
+      - "traefik.http.middlewares.redirect-td.redirectregex.permanent=true"
+      - "traefik.http.routers.traefik-dashboard.middlewares=redirect-td, traefik-auth@file"
+      - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"
+    networks:
+      traefik-net:
+        ipv4_address: 172.22.0.10
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  traefik-net:
+    name: traefik-net
+    external: true

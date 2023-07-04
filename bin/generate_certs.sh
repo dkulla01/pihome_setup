@@ -8,11 +8,18 @@ if ! command -v openssl &> /dev/null; then
   exit 1
 fi
 
+if ! command -v jq &> /dev/null; then
+  echoerr "\`jq\` is not installed on this machine. Install it with apt-get"
+  exit 1
+fi
+
 parent_dir=$(dirname "$script_dir")
 ca_creation_dir="${parent_dir}/ssl/ca"
 cert_creation_dir="${parent_dir}/ssl/certs"
 pihome_ca_key="${ca_creation_dir}/pihome-ca.key"
 pihome_ca_pemfile="${ca_creation_dir}/pihome-ca.pem"
+pihome_sans_domains_file="${script_dir}/pihome_domains.json"
+mosquitto_sans_domains_file="${script_dir}/mosquitto_domains.json"
 
 
 if [ -d "$ca_creation_dir"  ] && [ -f "$ca_creation_dir/pihome-ca.pem" ]; then
@@ -39,7 +46,7 @@ function build_certs() {
   local certs_dirname=$1
   local cert_prefix=$2
   local cert_subject=$3
-  local delimited_sans=$4
+  local domains_json_file=$4
   local ca_pemfile=$5
   local ca_key=$6
 
@@ -71,35 +78,26 @@ function build_certs() {
       "subjectAltName = @alt_names" \
       "" \
       "[alt_names]" \
-      "${delimited_sans}" \
+      "$(build_dns_sans_block "$domains_json_file")" \
   > "${certs_dirname}/${extfile_name}"
 
     cert_file="${certs_dirname}/${cert_prefix}.crt"
     echoerr "creating a certificate: ${cert_file}"
-    openssl x509 -trustout -req -in "$csr_file" -CA "${ca_pemfile}" -CAkey "${ca_key}" \
+    openssl x509 -req -in "$csr_file" -CA "${ca_pemfile}" -CAkey "${ca_key}" \
     -CAcreateserial -out "$cert_file" -days 3650 -sha256 -extfile "${certs_dirname}/${extfile_name}"
   fi
 }
 
 function build_dns_sans_block() {
-    local cert_sans=("$@")    
-    local dns_sans=()
-
-    for san_index in "${!cert_sans[@]}"; do
-      dns_sans+=("DNS.$((san_index + 1)) = ${cert_sans[$san_index]}")
-    done
-
-    printf '%s\n' "${dns_sans[@]}" 
+  local domain_json_file=$1
+  jq --raw-output '. | to_entries | .[] | "DNS.\(.key + 1) = \(.value)"' "$domain_json_file"
 }
 
+traefik_cert_creation_dir="${cert_creation_dir}/traefik"
+build_certs "$traefik_cert_creation_dir" 'pihome.run' 'pihome.run' "$pihome_sans_domains_file" "${pihome_ca_pemfile}" "${pihome_ca_key}"
 
-nginx_cert_creation_dir="${cert_creation_dir}/nginx"
-nginx_cert_sans="$(build_dns_sans_block 'pihome.run' 'pihole.pihome.run' 'homebridge.pihome.run' 'zigbee2mqtt.pihome.run')"
-build_certs "$nginx_cert_creation_dir" 'pihome.run' 'pihome.run' "$nginx_cert_sans" "${pihome_ca_pemfile}" "${pihome_ca_key}"
-
-mosquitto_cert_sans="$(build_dns_sans_block 'pihome.run' 'mqtt')"
 mosquitto_server_cert_creation_dir="${cert_creation_dir}/mosquitto-server"
-build_certs "$mosquitto_server_cert_creation_dir" 'server' 'pihome-mqtt-server.run' "$mosquitto_cert_sans" "${pihome_ca_pemfile}" "${pihome_ca_key}"
+build_certs "$mosquitto_server_cert_creation_dir" 'server' 'pihome-mqtt-server.run' "$mosquitto_sans_domains_file" "${pihome_ca_pemfile}" "${pihome_ca_key}"
 
 mosquitto_client_cert_creation_dir="${cert_creation_dir}/mosquitto-client"
-build_certs "$mosquitto_client_cert_creation_dir" 'client' 'pihome-mqtt-client.run' "$mosquitto_cert_sans" "${pihome_ca_pemfile}" "${pihome_ca_key}"
+build_certs "$mosquitto_client_cert_creation_dir" 'client' 'pihome-mqtt-client.run' "$mosquitto_sans_domains_file" "${pihome_ca_pemfile}" "${pihome_ca_key}"

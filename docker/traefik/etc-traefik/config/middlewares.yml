@@ -1,0 +1,5 @@
+http:
+  middlewares:
+    traefik-auth:
+      basicAuth:
+        usersFile: /etc/traefik/auth/users
