@@ -19,20 +19,20 @@ install_package_if_absent() {
   fi
 }
 
-echoerr "updating and upgrading apt..."
+echoerr "updating and upgrading apt-get..."
 
 
-if ! sudo apt update; then
+if ! sudo apt-get update --assume-yes; then
   echoerr "something went wrong updating apt"
   exit 1
 fi
 
-if ! sudo apt upgrade; then
+if ! sudo apt-get upgrade --assume-yes; then
   echoerr "something went wrong upgrading packages"
   exit 1
 fi
 
-echoerr "apt is up to date. moving on"
+echoerr "apt-get is up to date. moving on"
 
 echoerr "checking git..."
 install_package_if_absent 'git'
