@@ -21,8 +21,10 @@ pihome_ca_pemfile="${ca_creation_dir}/pihome-ca.pem"
 pihome_sans_domains_file="${script_dir}/pihome_domains.json"
 mosquitto_sans_domains_file="${script_dir}/mosquitto_domains.json"
 
-read -s -p "enter your desired ca private key password: " ca_key_password
-read -s -p "confirm your ca private key password: " confirm_password
+read -r -s -p "enter your desired ca private key password: " ca_key_password
+printf '\n'
+read -r -s -p "confirm your ca private key password: " confirm_password
+printf '\n'
 
 if [[ "$ca_key_password" != "$confirm_password" ]]; then
   echoerr "passwords do not match. exiting."
