@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # since the path building here is dynamic,
 # shellcheck disable=SC1091
-source "$DIR/echoerr.sh"
+source "$dir/echoerr.sh"
 
 install_package_if_absent() {
-  DEP_NAME=$1
+  local dep_name=$1
 
-  if dpkg-query -W -f='${Status}\n' "$DEP_NAME" 2> /dev/null | grep -q 'ok installed'; then
-    echoerr "$DEP_NAME is already installed. nothing to do here."
+  if dpkg-query -W -f='${Status}\n' "$dep_name" 2> /dev/null | grep -q 'ok installed'; then
+    echoerr "$dep_name is already installed. nothing to do here."
   else
-    echoerr "$DEP_NAME is not yet installed. Installing it now."
-    sudo apt-get install --assume-yes "$DEP_NAME"
+    echoerr "$dep_name is not yet installed. Installing it now."
+    sudo apt-get install --assume-yes "$dep_name"
   fi
 }
