@@ -1,0 +1,8 @@
+fix bonked indentation
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch add-jq
+# Changes to be committed:
+#	modified:   bin/install_secondary_deps.sh
+#

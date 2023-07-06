@@ -87,17 +87,20 @@ echoerr 'restarting the shell to pick up the changes to $PATH'
 # shellcheck disable=1091
 source "$HOME/.bashrc"
 
-echoerr "installing the latest python 3.11 version"
-pyenv install 3.11
+python_minor_version='3.11'
+if ! pyenv versions --bare | grep "$python_minor_version"; then
+  echoerr "installing the latest python 3.11 version"
+  pyenv install "$python_minor_version"
 
-echoerr 'making python 3.11 the global python'
-pyenv global 3.11
+  echoerr 'making python 3.11 the global python'
+  pyenv global "$python_minor_version"
 
-echoerr 'restarting the shell to pick up the pyenv changes'
+  echoerr 'restarting the shell to pick up the pyenv changes'
 
-# the aim is for this to be run on a host that already has a bashrc
-# shellcheck disable=1091
-source "$HOME/.bashrc"
+  # the aim is for this to be run on a host that already has a bashrc
+  # shellcheck disable=1091
+  source "$HOME/.bashrc"
+fi
 
 if ! command -v docker; then
   echoerr "installing docker"
