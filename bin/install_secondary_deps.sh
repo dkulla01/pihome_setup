@@ -29,15 +29,17 @@ install_package_if_absent 'apache2-utils' # needed for htpasswd
 install_package_if_absent 'jq'
 if ! command -v yq ; then
   echoerr 'installing yq'
-  wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq &&\
-    chmod +x /usr/bin/yq
+  sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq &&\
+    sudo chmod +x /usr/bin/yq
 fi
 
 echoerr 'done installing packages required for pyenv to build pythons.'
 
-echoerr 'installing pyenv'
-curl https://pyenv.run | bash
-echoerr "done installing pyenv"
+if ! command -v pyenv; then
+  echoerr 'installing pyenv'
+  curl https://pyenv.run | bash
+  echoerr "done installing pyenv"
+fi
 
 # we want to put these literal strings (with their variables) into .bashrc
 # without interpolating/evaluating the variables
@@ -98,19 +100,19 @@ echoerr 'restarting the shell to pick up the pyenv changes'
 source "$HOME/.bashrc"
 
 if ! command -v docker; then
-  echoerr "installing docker"
-  curl -fsSL https://get.docker.com -o get-docker.sh
-  sudo sh get-docker.sh
-  
-  echoerr "done installing docker. adding user \"${USER}\" to the docker group"
-  if [ "$(getent group docker)" ]; then
-    echoerr 'docker group already exists'
-  else
-    echoerr 'docker group does not exist. adding it now'
-    sudo groupadd docker
-  fi
-  sudo usermod -aG docker "$USER"
-  newgrp docker
-  
-  echoerr "done setting up docker. reboot now"
+echoerr "installing docker"
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+echoerr "done installing docker. adding user \"${USER}\" to the docker group"
+if [ "$(getent group docker)" ]; then
+  echoerr 'docker group already exists'
+else
+  echoerr 'docker group does not exist. adding it now'
+  sudo groupadd docker
+fi
+sudo usermod -aG docker "$USER"
+newgrp docker
+
+echoerr "done setting up docker. reboot now"
 fi
