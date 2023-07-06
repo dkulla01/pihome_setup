@@ -29,7 +29,7 @@ install_package_if_absent 'apache2-utils' # needed for htpasswd
 install_package_if_absent 'jq'
 if ! command -v yq ; then
   echoerr 'installing yq'
-  sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq &&\
+  sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm -O /usr/bin/yq &&\
     sudo chmod +x /usr/bin/yq
 fi
 
