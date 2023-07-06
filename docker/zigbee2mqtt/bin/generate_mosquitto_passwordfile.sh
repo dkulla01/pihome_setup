@@ -48,15 +48,15 @@ else
   docker run -v "$mosquitto_passwd_dir:/$mosquitto_passwd_dirname" \
     -w / \
     -it eclipse-mosquitto:2.0 mosquitto_passwd \
-    -c "/$mosquitto_passwd_dirname/$mosquitto_passwd_filename" \
     -b \
+    "/$mosquitto_passwd_dirname/$mosquitto_passwd_filename" \
     "$mosquitto_username" \
     "$mqtt_password"
 
 fi
 
 zigbee2mqtt_config_dirname=zigbee2mqtt-data
-zigbee2mqtt_mqtt_password_template_filename=secret.yaml
+zigbee2mqtt_mqtt_password_template_filename=secret.template.yaml
 zigbee2mqtt_mqtt_password_filename=secret.yaml
 
 zigbee2mqtt_mqtt_password_file="${zigbee2mqtt_root_dir}/${zigbee2mqtt_config_dirname}/${zigbee2mqtt_mqtt_password_filename}"
