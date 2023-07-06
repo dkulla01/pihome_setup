@@ -49,6 +49,7 @@ else
     -w / \
     -it eclipse-mosquitto:2.0 mosquitto_passwd \
     -c "/$mosquitto_passwd_dirname/$mosquitto_passwd_filename" \
+    -b \
     "$mosquitto_username" \
     "$mqtt_password"
 
