@@ -27,7 +27,7 @@ services:
         ipv4_address: 172.22.0.10
     extra_hosts:
       - "host.docker.internal:host-gateway"
-
+    restart: unless-stopped
 networks:
   traefik-net:
     name: traefik-net
