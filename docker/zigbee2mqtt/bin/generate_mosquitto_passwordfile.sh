@@ -62,5 +62,5 @@ zigbee2mqtt_mqtt_password_filename=secret.yaml
 
 zigbee2mqtt_mqtt_password_file="${zigbee2mqtt_root_dir}/${zigbee2mqtt_config_dirname}/${zigbee2mqtt_mqtt_password_filename}"
 zigbee2mqtt_mqtt_password_template_file="${zigbee2mqtt_root_dir}/${zigbee2mqtt_config_dirname}/${zigbee2mqtt_mqtt_password_template_filename}"
-yq_update_snippet=".user = ${mosquitto_username} | .password = ${mqtt_password}"
+yq_update_snippet=".user = \"${mosquitto_username}\" | .password = \"${mqtt_password}\""
 yq "$yq_update_snippet" "$zigbee2mqtt_mqtt_password_template_file" > "$zigbee2mqtt_mqtt_password_file"
