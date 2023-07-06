@@ -45,6 +45,7 @@ if [ -f "$mosquitto_passwd_file" ]; then
   echoerr "a mosquitto passwd file already exists: \`$mosquitto_passwd_file\`. if you need a new one, delete this file"
 else
   echoerr "creating a mosquitto passwd file with user \`$mosquitto_username\`"
+  touch "$mosquitto_passwd_dirname/$mosquitto_passwd_filename"
   docker run -v "$mosquitto_passwd_dir:/$mosquitto_passwd_dirname" \
     -w / \
     -it eclipse-mosquitto:2.0 mosquitto_passwd \
