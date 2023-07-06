@@ -1,6 +1,7 @@
 get-docker.sh
 ssl/
 passwordfile
+secret.yaml
 auth/
 etc-*/
 mosquitto-ssl/
