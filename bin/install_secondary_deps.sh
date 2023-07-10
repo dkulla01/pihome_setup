@@ -87,6 +87,23 @@ echoerr 'restarting the shell to pick up the changes to $PATH'
 # shellcheck disable=1091
 source "$HOME/.bashrc"
 
+
+# hack to get systemd to create the symlinks in /dev/serial/by-id
+# we need this for zigbee adapters, and rasperrypi os/debian bullseye has an
+# outdated version of systemd that has a bug
+# see https://www.reddit.com/r/debian/comments/1331wlr/devserialbyid_suddenly_missing/
+
+systemd_version=$(dpkg-query -W -f='${Version}\n' systemd)
+if dpkg --compare-versions "$systemd_version" "<=" "252"; then
+ echoerr "systemd version ${systemd_version} is less than 252, so we're replacing 60-serial.rules with a more recent version"
+ curl https://raw.githubusercontent.com/systemd/systemd/main/rules.d/60-serial.rules | sudo tee -a /usr/lib/udev/rules.d/60-serial.rules > /dev/null
+ sudo udevadm control --reload-rules
+ sudo udevadm trigger
+
+ echoerr "done updating 60-serial.rules and reloading udevadm"
+fi
+
+
 python_minor_version='3.11'
 if ! pyenv versions --bare | grep "$python_minor_version"; then
   echoerr "installing the latest python 3.11 version"
