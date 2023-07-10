@@ -26,7 +26,7 @@ echoerr \
 "We neeed to know what kind of zigbee adapter you're using in order to create \
 the appropriate zigbee2mqt configuration. Read more at https://www.zigbee2mqtt.io/guide/adapters/"
 
-read -r -p -n1 "Are you using a zigbee adapter based on a TI CC2652/CC1352 (Y/n)?" using_ti_zigbee
+read -r -n1 -p "Are you using a zigbee adapter based on a TI CC2652/CC1352 (Y/n)?" using_ti_zigbee
 printf '\n'
 
 if [ $using_ti_zigbee = 'Y' ]; then
@@ -36,7 +36,7 @@ if [ $using_ti_zigbee = 'Y' ]; then
   exit 0
 fi
 
-read -r -p -n1 "Are you using a zigbee adapter based on a Silicon Labs EFR32MG2x/MGM21x or EFR32MG1x/MGM1x series (Y/n)?" using_si_labs_zigbee
+read -r -n1 -p "Are you using a zigbee adapter based on a Silicon Labs EFR32MG2x/MGM21x or EFR32MG1x/MGM1x series (Y/n)?" using_si_labs_zigbee
 printf '\n'
 
 if [ $using_ti_zigbee = 'Y' ]; then
