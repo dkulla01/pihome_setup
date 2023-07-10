@@ -17,7 +17,7 @@ zigbee2mqtt_configuration_template_file="${zigbee2mqtt_root_dir}/${zigbee2mqtt_c
 # shellcheck source=../../../bin/echoerr.sh
 source "$main_scripts_dir/echoerr.sh"
 
-if ! command -v yq; then
+if ! command -v yq > /dev/null; then
   echoerr "yq must be installed to create the mosquitto password files"
   exit 1
 fi
@@ -26,20 +26,20 @@ echoerr \
 "We neeed to know what kind of zigbee adapter you're using in order to create \
 the appropriate zigbee2mqt configuration. Read more at https://www.zigbee2mqtt.io/guide/adapters/"
 
-read -r -s "Are you using a zigbee adapter based on a TI CC2652/CC1352 (Y/n)?" using_ti_zigbee
+read -r -p -n1 "Are you using a zigbee adapter based on a TI CC2652/CC1352 (Y/n)?" using_ti_zigbee
 printf '\n'
 
-if [ $using_ti_zigbee -e 'Y' ]; then
+if [ $using_ti_zigbee = 'Y' ]; then
   echoerr "Formatting configuration to use default zigbee adapter"
   # no actual formatting is required here -- just copy and rename the file
   cp "$zigbee2mqtt_configuration_template_file" "$zigbee2mqtt_configuration_file"
   exit 0
 fi
 
-read -r -s "Are you using a zigbee adapter based on a Silicon Labs EFR32MG2x/MGM21x or EFR32MG1x/MGM1x series (Y/n)?" using_si_labs_zigbee
+read -r -p -n1 "Are you using a zigbee adapter based on a Silicon Labs EFR32MG2x/MGM21x or EFR32MG1x/MGM1x series (Y/n)?" using_si_labs_zigbee
 printf '\n'
 
-if [ $using_ti_zigbee -e 'Y' ]; then
+if [ $using_ti_zigbee = 'Y' ]; then
   echoerr "Formatting configuration to use \`ezsp\` zigbee adapter"
   # do formatting and exit
   yq_update_snippet=".serial.adapter = \"ezsp\""
