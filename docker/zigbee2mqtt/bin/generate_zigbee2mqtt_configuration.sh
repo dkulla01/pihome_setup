@@ -43,7 +43,7 @@ if [ "$using_si_labs_zigbee" = 'Y' ] || [ "$using_si_labs_zigbee" = 'y' ]; then
   echoerr "Formatting configuration to use \`ezsp\` zigbee adapter"
   # do formatting and exit
   yq_update_snippet=".serial.adapter = \"ezsp\""
-  yq "$yq_update_snippet""$zigbee2mqtt_configuration_template_file" > "$zigbee2mqtt_configuration_file"
+  yq "$yq_update_snippet" "$zigbee2mqtt_configuration_template_file" > "$zigbee2mqtt_configuration_file"
   exit 0
 fi
 
