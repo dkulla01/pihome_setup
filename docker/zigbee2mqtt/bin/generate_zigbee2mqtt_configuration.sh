@@ -7,8 +7,8 @@ project_root_dir=$(dirname "$docker_project_dir")
 main_scripts_dir="$project_root_dir/bin"
 
 zigbee2mqtt_config_dirname=zigbee2mqtt-data
-zigbee2mqtt_configuration_template_filename=secret.template.yaml
-zigbee2mqtt_configuration_filename=secret.yaml
+zigbee2mqtt_configuration_template_filename=configuration.template.yaml
+zigbee2mqtt_configuration_filename=configuration.yaml
 
 zigbee2mqtt_configuration_file="${zigbee2mqtt_root_dir}/${zigbee2mqtt_config_dirname}/${zigbee2mqtt_configuration_filename}"
 zigbee2mqtt_configuration_template_file="${zigbee2mqtt_root_dir}/${zigbee2mqtt_config_dirname}/${zigbee2mqtt_configuration_template_filename}"
@@ -44,6 +44,7 @@ if [ $using_ti_zigbee = 'Y' ]; then
   # do formatting and exit
   yq_update_snippet=".serial.adapter = \"ezsp\""
   yq "$yq_update_snippet""$zigbee2mqtt_configuration_template_file" > "$zigbee2mqtt_configuration_file"
+  exit 0
 fi
 
 
