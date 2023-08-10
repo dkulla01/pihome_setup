@@ -10,7 +10,7 @@ mqtt:
   cert: "/app/conf/ssl/client.crt"
   version: 4
 serial:
-  port: "/dev/serial/by-id/PLACEHOLDER"
+  port: "/dev/serial/by-id/zigbee-serial-adapter"
 frontend:
   port: 8080
 permit_join: false

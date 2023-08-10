@@ -1,8 +1,11 @@
 [
   "pihome.run",
   "traefik-dashboard.pihome.run",
+  "td.pihome.run",
   "pihole.pihome.run",
   "zigbee2mqtt.pihome.run",
+  "z2m.pihome.run",
   "homebridge.pihome.run",
-  "homeassistant.pihome.run"
+  "homeassistant.pihome.run",
+  "hass.pihome.run"
 ]

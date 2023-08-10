@@ -41,7 +41,7 @@ services:
       - "traefik.http.routers.z2m.middlewares=redirect-z2m"
     devices:
       # specify the adapter path from zigbee2mqtt-data/configuration.yaml serial.port
-      - /dev/serial/by-id/PLACEHOLDER:/dev/serial/by-id/PLACEHOLDER
+      - ${ZIGBEE_SERIAL_ADAPTER:?err}:/dev/serial/by-id/zigbee-serial-adapter
 
 networks:
   traefik-net:

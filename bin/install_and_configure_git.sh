@@ -36,6 +36,7 @@ echoerr "apt-get is up to date. moving on"
 
 echoerr "checking git..."
 install_package_if_absent 'git'
+git config --global pull.rebase false
 
 if [ -f "$HOME/.ssh/id_ed25519.pub" ]; then
   echoerr "an ssh key already exists"

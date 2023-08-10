@@ -1,10 +1,12 @@
 get-docker.sh
 ssl/
 passwordfile
+secret.yaml
 auth/
 etc-*/
 mosquitto-ssl/
 zigbee2mqtt-ssl/
+**/zigbee2mqtt-data/configuration.yaml
 **/zigbee2mqtt-data/coordinator_backup.json
 **/zigbee2mqtt-data/database.db
 **/zigbee2mqtt-data/log/

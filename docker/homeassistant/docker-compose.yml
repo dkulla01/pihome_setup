@@ -10,7 +10,11 @@ services:
     network_mode: host
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.homeassistant.rule=Host(`homeassistant.pihome.run`)"
+      - "traefik.http.routers.homeassistant.rule=Host(`homeassistant.pihome.run`, `hass.pihome.run`)"
       - "traefik.http.routers.homeassistant.entrypoints=websecure"
       - "traefik.http.routers.homeassistant.tls=true"
       - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
+      - "traefik.http.middlewares.redirect-hass.redirectregex.regex=^https://hass.pihome.run/(.*)"
+      - "traefik.http.middlewares.redirect-hass.redirectregex.replacement=https://homeassistant.pihome.run/$${1}"
+      - "traefik.http.middlewares.redirect-hass.redirectregex.permanent=true"
+      - "traefik.http.routers.traefik-dashboard.middlewares=redirect-hass"
