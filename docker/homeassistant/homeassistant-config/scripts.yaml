@@ -1,42 +1,50 @@
-dump_configuration:
-  alias: dump configuration
-  sequence:
-    - alias: set variables
-      variables:
-        scenes_by_friendly_name_getter: >
-          {% raw %} {{ scenes_by_friendly_name[trigger.to_state.state] }} {%
-          endraw %}
-    - service: notify.configuration_notifier
-      data:
-        message: |
-          input_select:
-            offis_scenes_input_select_dropdown:
-              name: offis scenes input select
-              options:
-                {%- for item in area_entities('offis') | expand | selectattr('domain', 'eq', 'scene')| list %}
-                - {{ item.name }}
+alias: dump configuration
+sequence:
+  - alias: set variables
+    variables:
+      scenes_by_friendly_name_getter: >
+        {% raw %} {{ scenes_by_friendly_name[trigger.to_state.state] }} {% endraw %}
+  - service: notify.configuration_notifier
+    data:
+      message: |
+        # BEGIN AUTO GENERATED CONFIG
+        {% for area in areas() -%}
+        {% if not area_entities(area) | expand | selectattr('domain', 'eq', 'scene') | list -%}
+        # {{ area }} does not have any scenes
+        {% continue %}
+        {%- endif %}
+
+        # AUTO GENERATED CONFIG FOR {{ area }}: 
+        input_select:
+          {{ area }}_scenes_input_select_dropdown:
+            name: {{ area }} scenes input select
+            options:
+              {%- for item in area_entities(area) | expand | selectattr('domain', 'eq', 'scene')| list %}
+              - {{ item.name }}
+              {%- endfor %}
+            initial: {{ area_entities(area) | expand | selectattr('domain', 'eq', 'scene')| first | attr('name') }}
+            
+        automation {{ area }}:
+          - id: {{ area }}_scene_change_automation
+            alias: change_{{ area }}_scenes
+            description: change the {{ area }} scenes from the dropdown
+            trigger:
+              - platform: state
+                entity_id:
+                  - input_select.{{ area }}_scenes_input_select_dropdown
+            condition: []
+            mode: single
+            action:
+              - service: scene.turn_on
+                target:
+                  entity_id: >
+                    {{ '{% raw %}' }} {{ scenes_by_friendly_name_getter }} {{ '{% endraw %}' }}
+            variables:
+              scenes_by_friendly_name:
+                {%- for item in area_entities(area) | expand | selectattr('domain', 'eq', 'scene')| list %}
+                  {{ item.name }}: {{ item.entity_id }}
                 {%- endfor %}
-              initial: {{ area_entities('offis') | expand | selectattr('domain', 'eq', 'scene')| first | attr('name') }}
-              
-          automation offis:
-            - id: offis_scene_change_automation
-              alias: change_offis_scenes
-              description: change the office scenes from the dropdown
-              trigger:
-                - platform: state
-                  entity_id:
-                    - input_select.offis_scenes_input_select_dropdown
-              condition: []
-              mode: single
-              action:
-                - service: scene.turn_on
-                  target:
-                    entity_id: >
-                      {{ '{% raw %}' }} {{ scenes_by_friendly_name_getter }} {{ '{% endraw %}' }}
-              variables:
-                scenes_by_friendly_name:
-                  {%- for item in area_entities('offis') | expand | selectattr('domain', 'eq', 'scene')| list %}
-                    {{ item.name }}: {{ item.entity_id }}
-                  {%- endfor %}
-  mode: single
-  icon: mdi:cog
+        {% endfor -%}
+        # END AUTO GENERATED CONFIG
+mode: single
+icon: mdi:cog
