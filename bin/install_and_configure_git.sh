@@ -42,7 +42,17 @@ if [ -f "$HOME/.ssh/id_ed25519.pub" ]; then
   echoerr "an ssh key already exists"
 else
   echoerr "generating an ssh key"
-  if ! ssh-keygen -t ed25519 -C "dan@dankulla.com" -q -P "" -f "$HOME/.ssh/id_ed25519"; then
+  
+  read -r -p "Enter the email address to assign to this ssh key: " ssh_key_email_address
+  printf '\n'
+
+  read -r -p "Using email address \`${ssh_key_email_address}\`. Is this correct? (Y/n)? " email_address_confirmation
+  if [ "$email_address_confirmation" != "Y" ]; then
+    echoerr "SSH key generation cancelled. Exiting now."
+    exit 1
+  fi
+
+  if ! ssh-keygen -t ed25519 -C "$ssh_key_email_address" -q -P "" -f "$HOME/.ssh/id_ed25519"; then
     echoerr "there was a problem generating the ssh key"
     exit 1
   fi
