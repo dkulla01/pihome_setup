@@ -1,0 +1,22 @@
+alias: convert_mqtt_remote_event
+description: convert mqtt remote event into a script call
+trigger:
+  - platform: mqtt
+    topic: picotomqtt/+/+/+
+condition: []
+action:
+  - service: system_log.write
+    data:
+      level: info
+      message: "got a {{ event_type }} event for button: {{ button }} in area {{ area }}."
+  - service: script.respond_to_remote_script
+    data:
+      area: "{{ area }}"
+      button: "{{ button }}"
+      event_type: "{{ event_type }}"
+variables:
+  _split_topic: "{{ trigger.topic.split('/') }}"
+  button: "{{_split_topic[-1]}}"
+  area: "{{_split_topic[-3]}}"
+  event_type: "{{ trigger.payload_json.action }}"
+mode: parallel

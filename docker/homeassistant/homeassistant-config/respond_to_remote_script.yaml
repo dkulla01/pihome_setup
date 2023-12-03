@@ -1,0 +1,41 @@
+alias: respond to remote action
+fields:
+  area:
+    name: Area
+    description: the area that this remote event should control
+    selector:
+      area:
+  button:
+    name: Button
+    description: the active button on the remote
+    selector:
+      select:
+        options:
+          - POWER_ON
+          - POWER_OFF
+          - INCREASE
+          - DECREASE
+          - FAVORITE
+  event_type:
+    name: Button Press Type
+    description: the type of button press we're responding to
+    selector:
+      select:
+        options:
+          - SINGLE_PRESS_COMPLETED
+          - DOUBLE_PRESS_COMPLETED
+          - LONG_PRESS_ONGOING
+          - LONG_PRESS_COMPLETED
+sequence:
+  - choose:
+      - conditions: "{{ button == 'POWER_ON' }}"
+        sequence: []
+      - conditions: "{{ button == 'POWER_OFF' }}"
+        sequence: []
+      - conditions: "{{ button == 'FAVORITE' }}"
+        sequence: []
+      - conditions: "{{ button == 'INCREASE' }}"
+        sequence: []
+      - conditions: "{{ button == 'DECREASE' }}"
+        sequence: []
+mode: queued
