@@ -28,8 +28,8 @@ sequence:
 
         # AUTO GENERATED CONFIG FOR {{ area }}: 
         input_select:
-          {{ area }}_scenes_input_select_dropdown:
-            name: {{ area }} scenes input select
+          autogen_{{ area }}_scenes_input_select_dropdown:
+            name: autogen {{ area }} scenes input select
             options:
               {%- for item in area_entities(area) | expand | selectattr('domain', 'eq', 'scene')| list %}
               - {{ item.name }}
@@ -37,8 +37,8 @@ sequence:
             initial: {{ area_entities(area) | expand | selectattr('domain', 'eq', 'scene')| first | attr('name') }}
             
         automation {{ area }}:
-          - id: {{ area }}_scene_change_automation
-            alias: change_{{ area }}_scenes
+          - id: autogen_{{ area }}_scene_change_automation
+            alias: autogen_change_{{ area }}_scenes
             description: (autogen) change the {{ area }} scenes from the dropdown
             trigger:
               - platform: state
@@ -56,65 +56,65 @@ sequence:
                 {%- for item in area_entities(area) | expand | selectattr('domain', 'eq', 'scene')| list %}
                   {{ item.name }}: {{ item.entity_id }}
                 {%- endfor %}
-          # MQTT SUBSCRIPTION AUTOMATIONS
+          # # MQTT SUBSCRIPTION AUTOMATIONS
 
-          # TURN ON {{ area }}
-          - id: {{ area }}_turn_on_autogen
-            alias: {{ area }}_turn_on_autogen
-            description: (autogen) turn on the devices configured for {{ area }} from mqtt event
-            trigger:
-              - platform: mqtt
-                topic: picotomqtt/{{ area }}/+/power-on
-            action:
-              - choose:
-                  - conditions:
-                      - condition: or
-                        conditions:
-                          - condition: template
-                            value_template: "{{ '{% raw %}' -}} {{ single_press_completed_trigger }} {{- '{% endraw %}' }}"
-                          - condition: template
-                            value_template: "{{ '{% raw %}' -}} {{ long_press_completed_trigger }} {{- '{% endraw %}' }}"
-                          - condition: template
-                            value_template: "{{ '{% raw %}' -}} {{ double_press_completed_trigger }} {{- '{% endraw %}' }}"
-                    sequence:
-                      - service: light.turn_on
-                        data:
-                          brightness_pct: 100
-                        target:
-                          entity_id: light.offis_group
-                  - conditions:
-                      - condition: template
-                        value_template: "{{ '{% raw %}' -}} {{ single_press_completed_trigger }} {{- '{% endraw %}' }}"
-                    sequence:
-                      - service: light.turn_on
-                        data:
-                          brightness_pct: 10
-                        target:
-                          entity_id: light.offis_group
-            mode: queued
-          - id: {{ area }}_turn_off_autogen
-            alias: {{ area }}_turn_off_autogen
-            description: (autogen) turn off the devices configured for {{ area }} from mqtt event
-            description: ""
-            trigger:
-              - platform: mqtt
-                topic: picotomqtt/offis/+/power-off
-                payload: SINGLE_PRESS_COMPLETED
-                value_template: "{{ '{% raw %}' -}} {{ button_action_value_template }} {{- '{% endraw %}' }}"
-              - platform: mqtt
-                topic: picotomqtt/offis/+/power-off
-                payload: LONG_PRESS_COMPLETED
-                value_template: "{{ '{% raw %}' -}} {{ button_action_value_template }} {{- '{% endraw %}' }}"
-              - platform: mqtt
-                topic: picotomqtt/offis/+/power-off
-                payload: DOUBLE_PRESS_COMPLETED
-                value_template: "{{ '{% raw %}' -}} {{ button_action_value_template }} {{- '{% endraw %}' }}"
-            condition: []
-            action:
-              - service: light.turn_off
-                data: {}
-                target:
-                  entity_id: light.offis_group
+          # # TURN ON {{ area }}
+          # - id: autogen_{{ area }}_turn_on_autogen
+          #   alias: autogen_{{ area }}_turn_on_autogen
+          #   description: (autogen) turn on the devices configured for {{ area }} from mqtt event
+          #   trigger:
+          #     - platform: mqtt
+          #       topic: picotomqtt/{{ area }}/+/power-on
+          #   action:
+          #     - choose:
+          #         - conditions:
+          #             - condition: or
+          #               conditions:
+          #                 - condition: template
+          #                   value_template: "{{ '{% raw %}' -}} {{ single_press_completed_trigger }} {{- '{% endraw %}' }}"
+          #                 - condition: template
+          #                   value_template: "{{ '{% raw %}' -}} {{ long_press_completed_trigger }} {{- '{% endraw %}' }}"
+          #                 - condition: template
+          #                   value_template: "{{ '{% raw %}' -}} {{ double_press_completed_trigger }} {{- '{% endraw %}' }}"
+          #           sequence:
+          #             - service: light.turn_on
+          #               data:
+          #                 brightness_pct: 100
+          #               target:
+          #                 entity_id: light.offis_group
+          #         - conditions:
+          #             - condition: template
+          #               value_template: "{{ '{% raw %}' -}} {{ single_press_completed_trigger }} {{- '{% endraw %}' }}"
+          #           sequence:
+          #             - service: light.turn_on
+          #               data:
+          #                 brightness_pct: 10
+          #               target:
+          #                 entity_id: light.offis_group
+          #   mode: queued
+          # - id: autogen_{{ area }}_turn_off_autogen
+          #   alias: {{ area }}_turn_off_autogen
+          #   description: (autogen) turn off the devices configured for {{ area }} from mqtt event
+          #   description: ""
+          #   trigger:
+          #     - platform: mqtt
+          #       topic: picotomqtt/offis/+/power-off
+          #       payload: SINGLE_PRESS_COMPLETED
+          #       value_template: "{{ '{% raw %}' -}} {{ button_action_value_template }} {{- '{% endraw %}' }}"
+          #     - platform: mqtt
+          #       topic: picotomqtt/offis/+/power-off
+          #       payload: LONG_PRESS_COMPLETED
+          #       value_template: "{{ '{% raw %}' -}} {{ button_action_value_template }} {{- '{% endraw %}' }}"
+          #     - platform: mqtt
+          #       topic: picotomqtt/offis/+/power-off
+          #       payload: DOUBLE_PRESS_COMPLETED
+          #       value_template: "{{ '{% raw %}' -}} {{ button_action_value_template }} {{- '{% endraw %}' }}"
+          #   condition: []
+          #   action:
+          #     - service: light.turn_off
+          #       data: {}
+          #       target:
+          #         entity_id: light.offis_group
             mode: queued
         {% endfor -%}
         # END AUTO GENERATED CONFIG
