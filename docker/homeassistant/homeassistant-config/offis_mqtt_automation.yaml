@@ -1,0 +1,115 @@
+alias: offis_mqtt_subscribe
+description: listen for offis mqtt events. this will be the foundation of a blueprint
+trigger:
+  - platform: mqtt
+    topic: picotomqtt/offis/+/+
+condition: []
+action:
+  - choose:
+      - conditions:
+          condition: state
+          entity_id: light.offis_group
+          state: "off"
+        sequence:
+          - choose:
+              - conditions: >-
+                  {{ event_type == 'DOUBLE_PRESS_COMPLETED' or event_type ==
+                  'LONG_PRESS_COMPLETED' }}
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data:
+                      brightness_pct: 100
+              - conditions: "{{ event_type == 'SINGLE_PRESS_COMPLETED' }}"
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data: {}
+      - conditions: "{{ button == 'POWER_ON' }}"
+        sequence:
+          - choose:
+              - conditions: >-
+                  {{ event_type == 'DOUBLE_PRESS_COMPLETED' or event_type ==
+                  'LONG_PRESS_COMPLETED' }}
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data:
+                      brightness_pct: 100
+              - conditions: "{{ event_type == 'SINGLE_PRESS_COMPLETED' }}"
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data: {}
+      - conditions: "{{ button == 'POWER_OFF' }}"
+        sequence:
+          - service: light.turn_off
+            target:
+              entity_id: light.offis_group
+            data: {}
+      - conditions: "{{ button == 'FAVORITE' }}"
+        sequence:
+          - choose:
+              - conditions: "{{ event_type == 'SINGLE_PRESS_COMPLETED' }}"
+                sequence:
+                  - service: input_select.select_next
+                    data:
+                      cycle: true
+                    target:
+                      entity_id: input_select.offis_scenes_input_select_dropdown
+              - conditions: >-
+                  {{ event_type == 'DOUBLE_PRESS_COMPLETED' or  event_type ==
+                  'LONG_PRESS_COMPLETED' }}
+                sequence:
+                  - service: input_select.select_previous
+                    target:
+                      entity_id: input_select.offis_scenes_input_select_dropdown
+                    data:
+                      cycle: true
+      - conditions: "{{ button == 'INCREASE' }}"
+        sequence:
+          - choose:
+              - conditions: >-
+                  {{ event_type == 'SINGLE_PRESS_COMPLETED' or event_type ==
+                  'LONG_PRESS_ONGOING'}}
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data:
+                      brightness_step_pct: 5
+              - conditions: "{{ event_type == 'DOUBLE_PRESS_COMPLETED' }}"
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data:
+                      brightness_step_pct: 25
+      - conditions: "{{ button == 'DECREASE' }}"
+        sequence:
+          - choose:
+              - conditions: >-
+                  {{ event_type == 'SINGLE_PRESS_COMPLETED' or event_type ==
+                  'LONG_PRESS_ONGOING'}}
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data:
+                      brightness_step_pct: -5
+              - conditions: "{{ event_type == 'DOUBLE_PRESS_COMPLETED' }}"
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data:
+                      brightness_step_pct: -25
+variables:
+  _split_topic: "{{ trigger.topic.split('/') }}"
+  button: "{{ _split_topic[-1] | replace('-', '_') | upper }}"
+  event_type: "{{ trigger.payload_json.action }}"
+mode: single
