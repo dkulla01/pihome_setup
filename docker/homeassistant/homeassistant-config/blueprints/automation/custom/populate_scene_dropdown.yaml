@@ -1,0 +1,31 @@
+blueprint:
+  name: populate scene dropdown
+  description: fill an area's scene dropdown with the area's scenes
+  domain: automation
+  input:
+    area_name:
+      name: area name
+      description: the area that the scenes belong to
+      required: true
+      selector:
+        area: null
+    dropdown_entity_id:
+      name: dropdown entity id
+      description: the entity id of the dropdown to attach the scenes to
+      required: true
+      selector:
+        entity:
+          filter:
+            - domain: input_select
+alias: populate_offis_scene_dropdown_on_start
+description: populate the offis scene dropdown with the offis scenes when hass starts up
+trigger:
+  - platform: homeassistant
+    event: start
+condition: []
+action:
+  - service: script.populate_area_scene_dropdown
+    data:
+      area_name: !input area_name
+      dropdown_entity_id: !input dropdown_entity_id
+mode: single

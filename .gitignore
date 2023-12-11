@@ -15,4 +15,7 @@ zigbee2mqtt-ssl/
 **/home-assistant.log*
 **/home-assistant_v2.db*
 **/homeassistant-config/.storage/
-**/homeassistant-config/blueprints/
+# ignore the builtin homeassistant blueprints
+**/homeassistant-config/blueprints/automation/homeassistant/motion_light.yaml
+**/homeassistant-config/blueprints/automation/homeassistant/notify_leaving_zone.yaml
+**/homeassistant-config/blueprints/script/homeassistant/confirmable_notification.yaml
