@@ -55,68 +55,38 @@ sequence:
               scenes_by_friendly_name:
                 {%- for item in area_entities(area) | expand | selectattr('domain', 'eq', 'scene')| list %}
                   {{ item.name }}: {{ item.entity_id }}
-                {%- endfor %}
-          # # MQTT SUBSCRIPTION AUTOMATIONS
-
-          # # TURN ON {{ area }}
-          # - id: autogen_{{ area }}_turn_on_autogen
-          #   alias: autogen_{{ area }}_turn_on_autogen
-          #   description: (autogen) turn on the devices configured for {{ area }} from mqtt event
-          #   trigger:
-          #     - platform: mqtt
-          #       topic: picotomqtt/{{ area }}/+/power-on
-          #   action:
-          #     - choose:
-          #         - conditions:
-          #             - condition: or
-          #               conditions:
-          #                 - condition: template
-          #                   value_template: "{{ '{% raw %}' -}} {{ single_press_completed_trigger }} {{- '{% endraw %}' }}"
-          #                 - condition: template
-          #                   value_template: "{{ '{% raw %}' -}} {{ long_press_completed_trigger }} {{- '{% endraw %}' }}"
-          #                 - condition: template
-          #                   value_template: "{{ '{% raw %}' -}} {{ double_press_completed_trigger }} {{- '{% endraw %}' }}"
-          #           sequence:
-          #             - service: light.turn_on
-          #               data:
-          #                 brightness_pct: 100
-          #               target:
-          #                 entity_id: light.offis_group
-          #         - conditions:
-          #             - condition: template
-          #               value_template: "{{ '{% raw %}' -}} {{ single_press_completed_trigger }} {{- '{% endraw %}' }}"
-          #           sequence:
-          #             - service: light.turn_on
-          #               data:
-          #                 brightness_pct: 10
-          #               target:
-          #                 entity_id: light.offis_group
-          #   mode: queued
-          # - id: autogen_{{ area }}_turn_off_autogen
-          #   alias: {{ area }}_turn_off_autogen
-          #   description: (autogen) turn off the devices configured for {{ area }} from mqtt event
-          #   description: ""
-          #   trigger:
-          #     - platform: mqtt
-          #       topic: picotomqtt/offis/+/power-off
-          #       payload: SINGLE_PRESS_COMPLETED
-          #       value_template: "{{ '{% raw %}' -}} {{ button_action_value_template }} {{- '{% endraw %}' }}"
-          #     - platform: mqtt
-          #       topic: picotomqtt/offis/+/power-off
-          #       payload: LONG_PRESS_COMPLETED
-          #       value_template: "{{ '{% raw %}' -}} {{ button_action_value_template }} {{- '{% endraw %}' }}"
-          #     - platform: mqtt
-          #       topic: picotomqtt/offis/+/power-off
-          #       payload: DOUBLE_PRESS_COMPLETED
-          #       value_template: "{{ '{% raw %}' -}} {{ button_action_value_template }} {{- '{% endraw %}' }}"
-          #   condition: []
-          #   action:
-          #     - service: light.turn_off
-          #       data: {}
-          #       target:
-          #         entity_id: light.offis_group
-            mode: queued
-        {% endfor -%}
+                {%- endfor %} 
         # END AUTO GENERATED CONFIG
 mode: single
 icon: mdi:cog
+
+populate_area_scene_dropdown:
+  alias: populate_area_scene_dropdown
+  fields:
+    area_name:
+      name: area name
+      description: the area that the scenes belong to
+      required: true
+      selector:
+        area:
+    dropdown_entity_id:
+      name: dropdown entity id
+      description: the entity id of the dropdown to attach the scenes to
+      required: true
+      selector:
+        entity:
+          filter:
+            - domain: input_select
+  sequence:
+    - service: input_select.set_options
+      data:
+        options: >
+          {{ area_entities(area_name)
+          | expand
+          | selectattr('domain', 'eq', 'scene')
+          | map(attribute='name')
+          | list}}
+      target:
+        entity_id: "{{ dropdown_entity_id }}"
+  mode: single
+  icon: mdi:form-dropdown
