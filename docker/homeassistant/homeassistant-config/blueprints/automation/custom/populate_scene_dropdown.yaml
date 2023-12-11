@@ -6,13 +6,11 @@ blueprint:
     area_name:
       name: area name
       description: the area that the scenes belong to
-      required: true
       selector:
         area: null
     dropdown_entity_id:
       name: dropdown entity id
       description: the entity id of the dropdown to attach the scenes to
-      required: true
       selector:
         entity:
           filter:
