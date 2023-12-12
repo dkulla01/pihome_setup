@@ -1,0 +1,37 @@
+blueprint:
+  name: respond to mqtt light change event
+  description: respond to mqtt light change event
+  domain: automation
+  input:
+    area_name_blueprint_param:
+      name: area name
+      description: the area that the scenes belong to
+      selector:
+        area: null
+    dropdown_entity_id_blueprint_param:
+      name: dropdown entity id
+      description: the entity id of the dropdown to attach the scenes to
+      selector:
+        entity:
+          include_entities: >
+            {{ area_entities(area_name)
+            | expand
+            | selectattr('domain', 'eq', 'scene')
+            | map(attribute='id') }}
+          filter:
+            - domain: input_select
+    mqtt_base_topic_blueprint_param:
+      name: mqtt base topic
+      description: the mqtt topic to listen to for light change events
+      selector:
+        text: null
+      default: pico2mqtt
+variables:
+  mqtt_base_topic: !input mqtt_base_topic_blueprint_param
+  _split_topic: "{{ trigger.topic.split('/') }}"
+  area_name: !input area_name_blueprint_param
+  button: "{{ _split_topic[-1] | replace('-', '_') | upper }}"
+  event_type: "{{ trigger.payload_json.action }}"
+trigger:
+  - platform: mqtt
+    topic: "{{ mqtt_base_topic }}/{{ area_name }}/+/+"

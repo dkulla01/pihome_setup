@@ -4,16 +4,6 @@ sequence:
     variables:
       scenes_by_friendly_name_getter: >
         {% raw %} {{ scenes_by_friendly_name[trigger.to_state.state] }} {% endraw %}
-      single_press_completed_trigger: >
-        {% raw %} {{ trigger.payload_json.action == 'SINGLE_PRESS_COMPLETED'}} {% endraw %}
-      double_press_completed_trigger: >
-        {% raw %} {{ trigger.payload_json.action == 'DOUBLE_PRESS_COMPLETED'}} {% endraw %}
-      long_press_completed_trigger: >
-        {% raw %} {{ trigger.payload_json.action == 'LONG_PRESS_COMPLETED'}} {% endraw %}
-      long_press_ongoing_trigger: >
-        {% raw %} {{ trigger.payload_json.action == 'LONG_PRESS_ONGOING'}} {% endraw %}
-      button_action_value_template: >
-        {% raw %} {{ value_json.action }} {% endraw %}
   - service: notify.configuration_notifier
     data:
       message: |

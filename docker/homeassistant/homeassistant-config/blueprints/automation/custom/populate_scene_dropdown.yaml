@@ -14,9 +14,7 @@ blueprint:
       selector:
         entity:
           filter:
-            - domain: input_select
-alias: populate_offis_scene_dropdown_on_start
-description: populate the offis scene dropdown with the offis scenes when hass starts up
+            - domain: input_select)
 trigger:
   - platform: homeassistant
     event: start
