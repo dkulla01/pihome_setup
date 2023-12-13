@@ -13,11 +13,6 @@ blueprint:
       description: the entity id of the dropdown to attach the scenes to
       selector:
         entity:
-          include_entities: >
-            {{ area_entities(area_name)
-            | expand
-            | selectattr('domain', 'eq', 'scene')
-            | map(attribute='id') }}
           filter:
             - domain: input_select
     mqtt_base_topic_blueprint_param:
