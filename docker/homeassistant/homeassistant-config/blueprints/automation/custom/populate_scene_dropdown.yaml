@@ -14,7 +14,7 @@ blueprint:
       selector:
         entity:
           filter:
-            - domain: input_select)
+            - domain: input_select
 trigger:
   - platform: homeassistant
     event: start
