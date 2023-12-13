@@ -32,6 +32,108 @@ variables:
   area_name: !input area_name_blueprint_param
   button: "{{ _split_topic[-1] | replace('-', '_') | upper }}"
   event_type: "{{ trigger.payload_json.action }}"
+  button_name:
+    power_on: "POWER_ON"
+    power_off: "POWER_OFF"
+    increase: "INCREASE"
+    decrease: "DECREASE"
+    favorite: "FAVORITE"
+  action_type:
+    single_press_completed: "SINGLE_PRESS_COMPLETED"
+    double_press_completed: "DOUBLE_PRESS_COMPLETED"
+    long_press_ongoing: "LONG_PRESS_ONGOING"
+    long_press_completed: "LONG_PRESS_COMPLETED"
 trigger:
   - platform: mqtt
     topic: "{{ mqtt_base_topic }}/{{ area_name }}/+/+"
+action:
+  - choose:
+      - conditions:
+          condition: state
+          entity_id: light.offis_group
+          state: "off"
+        sequence:
+          - choose:
+              - conditions: "{{ event_type == action_type.double_press_completed or event_type == action_type.long_press_completed }}"
+                sequence:
+                  - service: scene.turn_on
+                    target:
+                      entity_id: scene.{{ states('input_select.offis_scenes_input_select_dropdown') }}
+              - conditions: "{{ event_type == action_type.single_press_completed }}"
+                sequence:
+                  - service: scene.turn_on
+                    target:
+                      entity_id: scene.{{ states('input_select.offis_scenes_input_select_dropdown')}}
+      - conditions: "{{ button == button_name.power_on }}"
+        sequence:
+          - choose:
+              - conditions: "{{ event_type == action_type.double_press_completed or event_type == action_type.long_press_completed }}"
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data:
+                      brightness_pct: 100
+              - conditions: "{{ event_type == action_type.single_press_completed }}"
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data: {}
+      - conditions: "{{ button == button_name. power_off }}"
+        sequence:
+          - service: light.turn_off
+            target:
+              entity_id: light.offis_group
+            data: {}
+      - conditions: "{{ button == button_name.favorite }}"
+        sequence:
+          - choose:
+              - conditions: "{{ event_type == action_type.single_press_completed }}"
+                sequence:
+                  - service: input_select.select_next
+                    data:
+                      cycle: true
+                    target:
+                      entity_id: input_select.offis_scenes_input_select_dropdown
+              - conditions: "{{ event_type == action_type.double_press_completed or  event_type == action_type.long_press_completed }}"
+                sequence:
+                  - service: input_select.select_previous
+                    target:
+                      entity_id: input_select.offis_scenes_input_select_dropdown
+                    data:
+                      cycle: true
+      - conditions: "{{ button == button_name.increase }}"
+        sequence:
+          - choose:
+              - conditions: "{{ event_type == action_type.single_press_completed or event_type == action_type.long_press_ongoing}}"
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data:
+                      brightness_step_pct: 5
+              - conditions: "{{ event_type == action_type.double_press_completed }}"
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data:
+                      brightness_step_pct: 25
+      - conditions: "{{ button == button_name.decrease }}"
+        sequence:
+          - choose:
+              - conditions: "{{ event_type == action_type.single_press_completed or event_type == action_type.long_press_ongoing}}"
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data:
+                      brightness_step_pct: -5
+              - conditions: "{{ event_type == action_type.double_press_completed }}"
+                sequence:
+                  - service: light.turn_on
+                    target:
+                      entity_id: light.offis_group
+                    data:
+                      brightness_step_pct: -25
