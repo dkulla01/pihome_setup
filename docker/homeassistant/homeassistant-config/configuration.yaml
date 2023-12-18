@@ -5,6 +5,13 @@ http:
   trusted_proxies:
     - "172.22.0.10" # the IP specified in ../../traefik/docker-compose.yml
 
+scene:
+  !include scenes.yaml
+automation:
+  !include automations.yaml
 # Load frontend themes from the themes folder
 frontend:
   themes: !include_dir_merge_named themes
+
+logger:
+  default: info
