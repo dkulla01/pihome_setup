@@ -17,4 +17,4 @@ services:
       - "traefik.http.middlewares.redirect-hass.redirectregex.regex=^https://hass.pihome.run/(.*)"
       - "traefik.http.middlewares.redirect-hass.redirectregex.replacement=https://homeassistant.pihome.run/$${1}"
       - "traefik.http.middlewares.redirect-hass.redirectregex.permanent=true"
-      - "traefik.http.routers.traefik-dashboard.middlewares=redirect-hass"
+      - "traefik.http.routers.homeassistant.middlewares=redirect-hass"
