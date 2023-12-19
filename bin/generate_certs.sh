@@ -89,7 +89,7 @@ function build_certs() {
       "" \
       "[alt_names]" \
       "$(build_dns_sans_block "$domains_json_file")" \
-  > "${certs_dirname}/${extfile_name}"
+    > "${certs_dirname}/${extfile_name}"
 
     cert_file="${certs_dirname}/${cert_prefix}.crt"
     echoerr "creating a certificate: ${cert_file}"
@@ -110,9 +110,31 @@ build_certs "$traefik_cert_creation_dir" 'pihome.run' 'pihome.run' "$pihome_sans
 mosquitto_server_cert_creation_dir="${cert_creation_dir}/mosquitto-server"
 build_certs "$mosquitto_server_cert_creation_dir" 'server' 'pihome-mqtt-server.run' "$mosquitto_sans_domains_file" "$pihome_ca_pemfile" "$pihome_ca_key" "$ca_key_password"
 
-mosquitto_client_cert_creation_dir="${cert_creation_dir}/mosquitto-client"
-homeassistant_client_cert_creation_dir="${cert_creation_dir}/homeassistant-client"
+
+function build_mqtt_client_certs() {
+    local certs_dirname=$1
+
+    local certs_filename_prefix
+    certs_filename_prefix="$(basename "$certs_dirname")"
+    local pihome_mqtt_client_cert_subject='pihome-mqtt-client.run'
+
+    build_certs \
+    "$certs_dirname" \
+    "$certs_filename_prefix" \
+    "$pihome_mqtt_client_cert_subject" \
+    "$mosquitto_sans_domains_file" \
+    "$pihome_ca_pemfile" \
+    "$pihome_ca_key" \
+    "$ca_key_password"
+}
 mqtt_explorer_client_cert_creation_dir="${cert_creation_dir}/mqtt-explorer-client"
-build_certs "$mqtt_explorer_client_cert_creation_dir" 'mqtt-explorer-client' 'pihome-mqtt-client.run' "$mosquitto_sans_domains_file" "$pihome_ca_pemfile" "$pihome_ca_key" "$ca_key_password"
-build_certs "$homeassistant_client_cert_creation_dir" 'homeassistant-client' 'pihome-mqtt-client.run' "$mosquitto_sans_domains_file" "$pihome_ca_pemfile" "$pihome_ca_key" "$ca_key_password"
-build_certs "$mosquitto_client_cert_creation_dir" 'client' 'pihome-mqtt-client.run' "$mosquitto_sans_domains_file" "$pihome_ca_pemfile" "$pihome_ca_key" "$ca_key_password"
+build_mqtt_client_certs "$mqtt_explorer_client_cert_creation_dir"
+
+homeassistant_mqtt_client_cert_creation_dir="${cert_creation_dir}/homeassistant-mqtt-client"
+build_mqtt_client_certs "$homeassistant_mqtt_client_cert_creation_dir"
+
+nodered_mqtt_client_cert_creation_dir="${cert_creation_dir}/nodered_mqtt_client"
+build_mqtt_client_certs "$nodered_mqtt_client_cert_creation_dir"
+
+mosquitto_client_cert_creation_dir="${cert_creation_dir}/mosquitto-mqtt-client"
+build_mqtt_client_certs "$mosquitto_client_cert_creation_dir"
