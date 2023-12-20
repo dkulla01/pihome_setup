@@ -20,6 +20,7 @@ pihome_ca_key="${ca_creation_dir}/pihome-ca.key"
 pihome_ca_pemfile="${ca_creation_dir}/pihome-ca.pem"
 pihome_sans_domains_file="${script_dir}/pihome_domains.json"
 mosquitto_sans_domains_file="${script_dir}/mosquitto_domains.json"
+mqtt_client_list_file="${script_dir}/mqtt_clients.json"
 
 read -r -s -p "enter your desired ca private key password: " ca_key_password
 printf '\n'
@@ -110,31 +111,18 @@ build_certs "$traefik_cert_creation_dir" 'pihome.run' 'pihome.run' "$pihome_sans
 mosquitto_server_cert_creation_dir="${cert_creation_dir}/mosquitto-server"
 build_certs "$mosquitto_server_cert_creation_dir" 'server' 'pihome-mqtt-server.run' "$mosquitto_sans_domains_file" "$pihome_ca_pemfile" "$pihome_ca_key" "$ca_key_password"
 
+echoerr "creating the mqtt client certificates"
 
-function build_mqtt_client_certs() {
-    local certs_dirname=$1
-
-    local certs_filename_prefix
-    certs_filename_prefix="$(basename "$certs_dirname")"
-    local pihome_mqtt_client_cert_subject='pihome-mqtt-client.run'
-
+jq --raw-output '.[]' "$mqtt_client_list_file" | while read -r mqtt_client_name; do
+    echoerr "creating the mqtt client certificate for $mqtt_client_name"
+    certs_dirname="${cert_creation_dir}/$mqtt_client_name"
     build_certs \
-    "$certs_dirname" \
-    "$certs_filename_prefix" \
-    "$pihome_mqtt_client_cert_subject" \
-    "$mosquitto_sans_domains_file" \
-    "$pihome_ca_pemfile" \
-    "$pihome_ca_key" \
-    "$ca_key_password"
-}
-mqtt_explorer_client_cert_creation_dir="${cert_creation_dir}/mqtt-explorer-client"
-build_mqtt_client_certs "$mqtt_explorer_client_cert_creation_dir"
-
-homeassistant_mqtt_client_cert_creation_dir="${cert_creation_dir}/homeassistant-mqtt-client"
-build_mqtt_client_certs "$homeassistant_mqtt_client_cert_creation_dir"
-
-nodered_mqtt_client_cert_creation_dir="${cert_creation_dir}/nodered_mqtt_client"
-build_mqtt_client_certs "$nodered_mqtt_client_cert_creation_dir"
-
-mosquitto_client_cert_creation_dir="${cert_creation_dir}/mosquitto-mqtt-client"
-build_mqtt_client_certs "$mosquitto_client_cert_creation_dir"
+        "$certs_dirname" \
+        "$mqtt_client_name" \
+        "$mqtt_client_name.pihome.run" \
+        "$mosquitto_sans_domains_file" \
+        "$pihome_ca_pemfile" \
+        "$pihome_ca_key" \
+        "$ca_key_password"
+done
+echoerr 'done creating the mqtt client certificates'
