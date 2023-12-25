@@ -11,6 +11,7 @@ function create_root_cert() {
   local root_cert_filename=$2
   local root_cert_key_filename=$3
   local root_cert_key_password=$4
+  local cert_timestamp_version=$5
 
   root_cert_key_file="${root_cert_dirname}/${root_cert_key_filename}"
   root_cert_file="${root_cert_dirname}/${root_cert_filename}"
@@ -34,7 +35,7 @@ function create_root_cert() {
     -subj "/CN=pihome-ca.run"
 
   echoerr "copying the pihome-ca root certificate to the ca-certificates dir"
-  sudo cp "$root_cert_file" /usr/local/share/ca-certificates/pihome-ca.crt
+  sudo cp "$root_cert_file" "/usr/local/share/ca-certificates/pihome-ca-${cert_timestamp_version}.crt"
 
   echoerr "updating the certificates store"
   sudo update-ca-certificates
@@ -137,7 +138,8 @@ if [ "${#root_cert_dirs[@]}" -eq 0 ]; then
     "$most_recent_root_cert_dir" \
     "$pihome_ca_cert_filename" \
     "$pihome_ca_key_filename" \
-    "$root_cert_key_password"
+    "$root_cert_key_password" \
+    "$cert_timestamp_version"
 elif [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_cert_filename}" ] \
       || [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_key_filename}" ] ; then
   recent_but_malformed_ca_dir=${root_cert_dirs[-1]}
@@ -150,7 +152,8 @@ elif [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_cert_filename}" ] \
     "$most_recent_root_cert_dir" \
     "$pihome_ca_cert_filename" \
     "$pihome_ca_key_filename" \
-    "$root_cert_key_password"
+    "$root_cert_key_password" \
+    "$cert_timestamp_version"
 else
   most_recent_root_cert_dir=${root_cert_dirs[-1]}
   
@@ -168,7 +171,8 @@ else
       "$most_recent_root_cert_dir" \
       "$pihome_ca_cert_filename" \
       "$pihome_ca_key_filename" \
-      "$root_cert_key_password"
+      "$root_cert_key_password" \
+      "$cert_timestamp_version"
   fi
 fi
 
