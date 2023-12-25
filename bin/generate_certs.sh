@@ -179,7 +179,7 @@ fi
 cert_dir_prefix="cert"
 cert_creation_dir="$ssl_dir/${cert_dir_prefix}-${cert_timestamp_version}"
 root_cert_pemfile="${most_recent_root_cert_dir}/${pihome_ca_cert_filename}"
-root_cert_keyfile="${most_recent_root_cert_dir}/${pihome_ca_cert_filename}"
+root_cert_keyfile="${most_recent_root_cert_dir}/${pihome_ca_key_filename}"
 
 traefik_cert_creation_dir="${cert_creation_dir}/traefik"
 build_certs \
