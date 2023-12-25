@@ -161,6 +161,14 @@ else
   printf '\n'
 
   if [ "$use_existing_ca" = 'Y' ] || [ "$use_existing_ca" = 'y' ]; then
+    
+    # check that the passwords match
+    echoerr 'checking password against existing key'
+    if ! openssl rsa -noout -in "${most_recent_root_cert_dir}/${pihome_ca_key_filename}" -passin "pass:$root_cert_key_password" 2>/dev/null; then
+      echoerr "invalid password. exiting"
+      exit 1
+    fi
+
     echoerr "using most recent root cert inside ${most_recent_root_cert_dir}"
   else
     most_recent_root_cert_dir="${parent_dir}/ssl/${root_cert_dir_prefix}-${cert_timestamp_version}"
