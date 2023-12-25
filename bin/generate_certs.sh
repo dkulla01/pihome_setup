@@ -6,6 +6,41 @@ shopt -s nullglob
 script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source "$script_dir/echoerr.sh"
 
+function create_root_cert() {
+  local root_cert_dirname=$1
+  local root_cert_filename=$2
+  local root_cert_key_filename=$3
+  local root_cert_key_password=$4
+
+  root_cert_key_file="${root_cert_dirname}/${root_cert_key_filename}"
+  root_cert_file="${root_cert_dirname}/${root_cert_filename}"
+  echoerr "creating a local root certificate private key for LAN-hosted pages"
+  openssl genrsa \
+    -des3 \
+    -out "$root_cert_key_file" \
+    -passout "pass:${root_cert_key_password}" \
+    4096
+
+  echoerr "creating a local root certificate with that private key"
+  openssl req \
+    -x509 \
+    -new \
+    -nodes \
+    -key "$root_cert_key_file" \
+    -passin "pass:${root_cert_key_password}" \
+    -sha256 \
+    -days 3650 \
+    -out "$root_cert_file" \
+    -subj "/CN=pihome-ca.run"
+
+  echoerr "copying the pihome-ca root certificate to the ca-certificates dir"
+  sudo cp "$root_cert_file" /usr/local/share/ca-certificates/pihome-ca.crt
+
+  echoerr "updating the certificates store"
+  sudo update-ca-certificates
+
+}
+
 function build_certs() {
   local certs_dirname=$1
   local cert_prefix=$2
@@ -13,7 +48,7 @@ function build_certs() {
   local domains_json_file=$4
   local ca_pemfile=$5
   local ca_key=$6
-  local ca_key_password=$7
+  local root_cert_key_password=$7
 
   if [ -d "$certs_dirname" ]; then
     echoerr "it looks like a \`$cert_prefix\` certificates directory already exists: \`$certs_dirname\`."\
@@ -49,7 +84,7 @@ function build_certs() {
     cert_file="${certs_dirname}/${cert_prefix}.crt"
     echoerr "creating a certificate: ${cert_file}"
     openssl x509 -req -in "$csr_file" -CA "${ca_pemfile}" -CAkey "${ca_key}" \
-    -passin "pass:${ca_key_password}" \
+    -passin "pass:${root_cert_key_password}" \
     -CAcreateserial -out "$cert_file" -days 3650 -sha256 -extfile "${certs_dirname}/${extfile_name}"
   fi
 }
@@ -77,12 +112,12 @@ pihome_sans_domains_file="${script_dir}/pihome_domains.json"
 mosquitto_sans_domains_file="${script_dir}/mosquitto_domains.json"
 mqtt_client_list_file="${script_dir}/mqtt_clients.json"
 
-read -r -s -p "enter your desired ca private key password: " ca_key_password
+read -r -s -p "enter your desired ca private key password: " root_cert_key_password
 printf '\n'
 read -r -s -p "confirm your ca private key password: " confirm_password
 printf '\n'
 
-if [[ "$ca_key_password" != "$confirm_password" ]]; then
+if [[ "$root_cert_key_password" != "$confirm_password" ]]; then
   echoerr "passwords do not match. exiting."
   exit 1
 fi
@@ -96,9 +131,13 @@ pihome_ca_key_filename='pihome-ca.key'
 
 if [ "${#root_cert_dirs[@]}" -eq 0 ]; then
   most_recent_root_cert_dir="${parent_dir}/ssl/${root_cert_dir_prefix}-${cert_timestamp_version}"
-  echoerr "creating a root cert at ${most_recent_root_cert_dir}"
+  echoerr "No root cert directory present. creating a root cert at ${most_recent_root_cert_dir}"
   mkdir -p "$most_recent_root_cert_dir"
-  create_root_cert "$most_recent_root_cert_dir" "$pihome_ca_cert_filename" "$pihome_ca_key_filename"
+  create_root_cert \
+    "$most_recent_root_cert_dir" \
+    "$pihome_ca_cert_filename" \
+    "$pihome_ca_key_filename" \
+    "$root_cert_key_password"
 elif [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_cert_filename}" ] \
       || [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_key_filename}" ] ; then
   recent_but_malformed_ca_dir=${root_cert_dirs[-1]}
@@ -106,7 +145,12 @@ elif [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_cert_filename}" ] \
   echoerr "there's a root cert at ${recent_but_malformed_ca_dir}, but we're \
     missing either the cert or the key. creating a new root cert at ${most_recent_root_cert_dir}"
   mkdir -p "$most_recent_root_cert_dir"
-  create_root_cert "$most_recent_root_cert_dir" "$pihome_ca_cert_filename" "$pihome_ca_key_filename"
+  
+  create_root_cert \
+    "$most_recent_root_cert_dir" \
+    "$pihome_ca_cert_filename" \
+    "$pihome_ca_key_filename" \
+    "$root_cert_key_password"
 else
   most_recent_root_cert_dir=${root_cert_dirs[-1]}
   
@@ -119,18 +163,39 @@ else
     most_recent_root_cert_dir="${parent_dir}/ssl/${root_cert_dir_prefix}-${cert_timestamp_version}"
     echoerr "creating a root cert dir at ${most_recent_root_cert_dir}"
     mkdir -p "$most_recent_root_cert_dir"
-    create_root_cert "$most_recent_root_cert_dir" "$pihome_ca_cert_filename" "$pihome_ca_key_filename"
+    
+    create_root_cert \
+      "$most_recent_root_cert_dir" \
+      "$pihome_ca_cert_filename" \
+      "$pihome_ca_key_filename" \
+      "$root_cert_key_password"
   fi
 fi
 
 cert_dir_prefix="cert"
 cert_creation_dir="$ssl_dir/${cert_dir_prefix}-${cert_timestamp_version}"
+root_cert_pemfile="${most_recent_root_cert_dir}/${pihome_ca_cert_filename}"
+root_cert_keyfile="${most_recent_root_cert_dir}/${pihome_ca_cert_filename}"
 
 traefik_cert_creation_dir="${cert_creation_dir}/traefik"
-build_certs "$traefik_cert_creation_dir" 'pihome.run' 'pihome.run' "$pihome_sans_domains_file" "$pihome_ca_pemfile" "$pihome_ca_key" "$ca_key_password"
+build_certs \
+  "$traefik_cert_creation_dir" \
+  'pihome.run' \
+  'pihome.run' \
+  "$pihome_sans_domains_file" \
+  "$root_cert_pemfile" \
+  "$root_cert_keyfile" \
+  "$root_cert_key_password"
 
 mosquitto_server_cert_creation_dir="${cert_creation_dir}/mosquitto-server"
-build_certs "$mosquitto_server_cert_creation_dir" 'server' 'pihome-mqtt-server.run' "$mosquitto_sans_domains_file" "$pihome_ca_pemfile" "$pihome_ca_key" "$ca_key_password"
+build_certs \
+  "$mosquitto_server_cert_creation_dir" \
+  'server' \
+  'pihome-mqtt-server.run' \
+  "$mosquitto_sans_domains_file" \
+  "$root_cert_pemfile" \
+  "$root_cert_keyfile" \
+  "$root_cert_key_password"
 
 echoerr "creating the mqtt client certificates"
 
@@ -142,8 +207,8 @@ jq --raw-output '.[]' "$mqtt_client_list_file" | while read -r mqtt_client_name;
     "$mqtt_client_name" \
     "$mqtt_client_name.pihome.run" \
     "$mosquitto_sans_domains_file" \
-    "$pihome_ca_pemfile" \
-    "$pihome_ca_key" \
-    "$ca_key_password"
+    "$root_cert_pemfile" \
+    "$root_cert_keyfile" \
+    "$root_cert_key_password"
 done
 echoerr 'done creating the mqtt client certificates'
