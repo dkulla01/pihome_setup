@@ -11,7 +11,7 @@ date_version_regex='^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}_[0-9]{2}_[0-9]{2}$'
 if [[ ! -v ROOT_CERT_VERSION ]]; then
   echoerr "\$ROOT_CERT_VERSION envionment variable is unset. Exiting now"
   exit 1
-elif [[ ! $ROOT_CERT_VERSION =~ $date_version_regex ]]; then
+elif [[ ! "$ROOT_CERT_VERSION" =~ $date_version_regex ]]; then
   echoerr "\$ROOT_CERT_VERSION envionment variable is unset or malformed. value: \"${ROOT_CERT_VERSION}\". Exiting now"
   exit 1
 else
