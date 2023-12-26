@@ -8,7 +8,10 @@ source "$script_dir/echoerr.sh"
 
 # 2023-12-25-01_53_17
 date_version_regex='^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}_[0-9]{2}_[0-9]{2}$'
-if [[ ! -v $ROOT_CERT_VERSION ]] || [[ ! $ROOT_CERT_VERSION =~ $date_version_regex ]]; then
+if [[ ! -v ROOT_CERT_VERSION ]]; then
+  echoerr "\$ROOT_CERT_VERSION envionment variable is unset. Exiting now"
+  exit 1
+elif [[ ! $ROOT_CERT_VERSION =~ $date_version_regex ]]; then
   echoerr "\$ROOT_CERT_VERSION envionment variable is unset or malformed. value: \"${ROOT_CERT_VERSION}\". Exiting now"
   exit 1
 else
@@ -27,8 +30,11 @@ if [[ ! -d "$versioned_root_cert_dir" ]] \
 fi
 
 
-if [[ ! -v $CERT_VERSION ]] || [[ ! $CERT_VERSION =~ $date_version_regex ]]; then
-  echoerr "\$CERT_VERSION envionment variable is unset or malformed. value: \"${CERT_VERSION}\". Exiting now"
+if [[ ! -v CERT_VERSION ]]; then
+  echoerr "\$CERT_VERSION envionment variable is unset. Exiting now"
+  exit 1
+elif [[ ! "$CERT_VERSION" =~ $date_version_regex ]]; then
+  echoerr "\$CERT_VERSION envionment variable is malformed. value: \"${CERT_VERSION}\". Exiting now"
   exit 1
 else
   echoerr "using ROOT_CERT_VERSION=${ROOT_CERT_VERSION} and CERT_VERSION=${CERT_VERSION}"
