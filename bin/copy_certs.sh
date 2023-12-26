@@ -101,8 +101,8 @@ fi
 
 # at this point, all of the certs and keys we want exist and look good, so let's start copying them.
 docker_project_dir="${project_dir}/docker"
-traefik_root_cert_mount_source="${docker_project_dir}/ssl/root-cert-${ROOT_CERT_VERSION}"
-traefik_cert_mount_source="${docker_project_dir}/ssl/cert-${SSL_CERT_VERSION}"
+traefik_root_cert_mount_source="${docker_project_dir}/traefik/ssl/root-cert-${ROOT_CERT_VERSION}"
+traefik_cert_mount_source="${docker_project_dir}/traefik/ssl/cert-${CERT_VERSION}"
 
 echoerr "copying certificates for traefik reverse proxy"
 echoerr "copying root certificate for traefik reverse proxy"
@@ -119,8 +119,8 @@ cp "$traefik_cert_file" "$traefik_cert_key_file" "$traefik_cert_mount_source"
 
 
 zigbee2mqtt_dir="${docker_project_dir}/zigbee2mqtt"
-mosquitto_ssl_dir="${zigbee2mqtt_dir}/mosquitto-ssl-${SSL_CERT_VERSION}"
-zigbee2mqtt_ssl_dir="${zigbee2mqtt_dir}/zigbee2mqtt-ssl-${SSL_CERT_VERSION}"
+mosquitto_ssl_dir="${zigbee2mqtt_dir}/mosquitto-ssl-${CERT_VERSION}"
+zigbee2mqtt_ssl_dir="${zigbee2mqtt_dir}/zigbee2mqtt-ssl-${CERT_VERSION}"
 
 echoerr "copying mosquitto server certs"
 mkdir -p "$mosquitto_ssl_dir"
