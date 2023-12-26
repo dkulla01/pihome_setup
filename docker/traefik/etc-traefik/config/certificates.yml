@@ -1,14 +1,14 @@
 tls:
   certificates:
-    - certFile: /etc/traefik/ssl/certs/pihome.run.crt
-      keyFile: /etc/traefik/ssl/certs/pihome.run.key
-    # - certFile: /etc/traefik-ssl/certs/pihome.run.crt
-    #   keyFile: /etc/traefik-ssl/certs/pihome.run.key
+    # - certFile: /etc/traefik/ssl/certs/pihome.run.crt
+    # keyFile: /etc/traefik/ssl/certs/pihome.run.key
+    - certFile: /etc/traefik-ssl/certs/pihome.run.crt
+      keyFile: /etc/traefik-ssl/certs/pihome.run.key
 
   stores:
     default:
       defaultCertificate:
-        certFile: /etc/traefik/ssl/certs/pihome.run.crt
-        keyFile: /etc/traefik/ssl/certs/pihome.run.key
-        # certFile: /etc/traefik-ssl/certs/pihome.run.crt
-        # keyFile: /etc/traefik-ssl/certs/pihome.run.key
+        # certFile: /etc/traefik/ssl/certs/pihome.run.crt
+        # keyFile: /etc/traefik/ssl/certs/pihome.run.key
+        certFile: /etc/traefik-ssl/certs/pihome.run.crt
+        keyFile: /etc/traefik-ssl/certs/pihome.run.key
