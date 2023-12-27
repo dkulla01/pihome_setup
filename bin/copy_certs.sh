@@ -106,9 +106,7 @@ traefik_cert_mount_source="${docker_project_dir}/traefik/ssl/cert-${CERT_VERSION
 
 echoerr "copying certificates for traefik reverse proxy"
 echoerr "copying root certificate for traefik reverse proxy"
-if [[ ! -d "$traefik_root_cert_mount_source" ]]; then
-  mkdir -p "$traefik_root_cert_mount_source"
-fi
+mkdir -p "$traefik_root_cert_mount_source"
 
 cp "$root_cert_file" "$traefik_root_cert_mount_source"
 
@@ -119,20 +117,28 @@ cp "$traefik_cert_file" "$traefik_cert_key_file" "$traefik_cert_mount_source"
 
 
 zigbee2mqtt_dir="${docker_project_dir}/zigbee2mqtt"
-mosquitto_ssl_dir="${zigbee2mqtt_dir}/mosquitto-ssl-${CERT_VERSION}"
-zigbee2mqtt_ssl_dir="${zigbee2mqtt_dir}/zigbee2mqtt-ssl-${CERT_VERSION}"
+mosquitto_ssl_root_cert_dir="${zigbee2mqtt_dir}/mosquitto-ssl/root-cert-${ROOT_CERT_VERSION}"
+mosquitto_ssl_cert_dir="${zigbee2mqtt_dir}/mosquitto-ssl/cert-${CERT_VERSION}"
+
+zigbee2mqtt_ssl_root_cert_dir="${zigbee2mqtt_dir}/zigbee2mqtt-ssl/root-cert-${ROOT_CERT_VERSION}"
+zigbee2mqtt_ssl_cert_dir="${zigbee2mqtt_dir}/zigbee2mqtt-ssl/cert-${CERT_VERSION}"
 
 echoerr "copying mosquitto server certs"
-mkdir -p "$mosquitto_ssl_dir"
+mkdir -p "$mosquitto_ssl_root_cert_dir"
+cp "$root_cert_file" "$mosquitto_ssl_root_cert_dir"
 
-cp "$mqtt_server_cert_file" "$mqtt_server_cert_key_file" "$mosquitto_ssl_dir"
+mkdir -p "$mosquitto_ssl_cert_dir"
+cp "$mqtt_server_cert_file" "$mqtt_server_cert_key_file" "$mosquitto_ssl_cert_dir"
 
 echoerr "copying zigbee2mqtt client certs"
-mkdir -p "$zigbee2mqtt_ssl_dir"
+mkdir -p "$zigbee2mqtt_ssl_root_cert_dir"
+cp "$root_cert_file" "$zigbee2mqtt_ssl_root_cert_dir"
+
+mkdir -p "$zigbee2mqtt_ssl_cert_dir"
 zigbee2mqtt_cert_dir="${versioned_cert_dir}/${zigbee2mqtt_mqtt_client_name}"
 zigbee2mqtt_cert_file="${zigbee2mqtt_cert_dir}/${zigbee2mqtt_mqtt_client_name}.crt"
 zigbee2mqtt_key_file="${zigbee2mqtt_cert_dir}/${zigbee2mqtt_mqtt_client_name}.key"
-cp "$zigbee2mqtt_cert_file" "$zigbee2mqtt_key_file" "$zigbee2mqtt_ssl_dir"
+cp "$zigbee2mqtt_cert_file" "$zigbee2mqtt_key_file" "$zigbee2mqtt_ssl_cert_dir"
 
 
 echoerr "done copying all of the certs that can be automatically copied. You still \
