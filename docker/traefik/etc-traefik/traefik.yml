@@ -11,7 +11,6 @@ providers:
 
 serversTransport:
   rootCAs:
-    # - /etc/traefik/ssl/certs/pihome-ca.pem
     - /etc/traefik-ssl/ca/pihome-ca.pem
 
 log:
