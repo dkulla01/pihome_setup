@@ -62,7 +62,7 @@ delim=''
 joined=''
 
 for key_byte in "${network_key_hex[@]}"; do
-    joined="${joined}${delim}${key_byte}"
+    joined="${joined}${delim}0x${key_byte}"
     delim=', '
 done
 network_key_array_string="[${joined}]" 
