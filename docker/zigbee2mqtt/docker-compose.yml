@@ -5,7 +5,8 @@ services:
     restart: unless-stopped
     volumes:
       - "./mosquitto-data:/mosquitto"
-      - "./mosquitto-ssl:/mosquitto/conf/ssl"
+      - "./mosquitto-ssl/cert-${CERT_VERSION:?err}:/mosquitto/conf/ssl/cert"
+      - "./mosquitto-ssl/root-cert-${ROOT_CERT_VERSION:?err}:/mosquitto/conf/ssl/root-cert"
       - "./mosquitto-passwd:/mosquitto/conf/passwd"
     ports:
       - "8883:8883"
@@ -21,7 +22,8 @@ services:
     image: koenkk/zigbee2mqtt
     volumes:
       - ./zigbee2mqtt-data:/app/data
-      - ./zigbee2mqtt-ssl:/app/conf/ssl
+      - ./zigbee2mqtt-ssl/cert-${CERT_VERSION:?err}:/app/conf/ssl/cert
+      - ./zigbee2mqtt-ssl/root-cert-${ROOT_CERT_VERSION:?err}:/app/conf/ssl/root-cert
       - /run/udev:/run/udev:ro
     networks:
       traefik-net:

@@ -56,11 +56,22 @@ else
 
 fi
 
+echoerr 'generating network key for zigbee network'
+readarray -t network_key_hex < <(openssl rand -hex 16 | fold -w2)
+delim=''
+joined=''
+
+for key_byte in "${network_key_hex[@]}"; do
+    joined="${joined}${delim}0x${key_byte}"
+    delim=', '
+done
+network_key_array_string="[${joined}]" 
+
 zigbee2mqtt_config_dirname=zigbee2mqtt-data
 zigbee2mqtt_mqtt_password_template_filename=secret.template.yaml
 zigbee2mqtt_mqtt_password_filename=secret.yaml
 
 zigbee2mqtt_mqtt_password_file="${zigbee2mqtt_root_dir}/${zigbee2mqtt_config_dirname}/${zigbee2mqtt_mqtt_password_filename}"
 zigbee2mqtt_mqtt_password_template_file="${zigbee2mqtt_root_dir}/${zigbee2mqtt_config_dirname}/${zigbee2mqtt_mqtt_password_template_filename}"
-yq_update_snippet=".user = \"${mosquitto_username}\" | .password = \"${mqtt_password}\""
+yq_update_snippet=".user = \"${mosquitto_username}\" | .password = \"${mqtt_password}\" | .network_key = ${network_key_array_string}"
 yq "$yq_update_snippet" "$zigbee2mqtt_mqtt_password_template_file" > "$zigbee2mqtt_mqtt_password_file"

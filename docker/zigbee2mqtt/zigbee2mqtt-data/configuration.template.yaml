@@ -5,9 +5,9 @@ mqtt:
   reject_unauthorized: true
   user: "!secret.yaml user"
   password: "!secret.yaml password"
-  ca: "/app/conf/ssl/pihome-ca.pem"
-  key: "/app/conf/ssl/client.key"
-  cert: "/app/conf/ssl/client.crt"
+  ca: "/app/conf/ssl/root-cert/pihome-ca.pem"
+  key: "/app/conf/ssl/cert/zigbee2mqtt-mqtt-client.key"
+  cert: "/app/conf/ssl/cert/zigbee2mqtt-mqtt-client.crt"
   version: 4
 serial:
   port: "/dev/serial/by-id/zigbee-serial-adapter"
@@ -15,5 +15,5 @@ frontend:
   port: 8080
 permit_join: false
 advanced:
-  network_key: "GENERATE"
+  network_key: "!secret.yaml network_key"
 homeassistant: true

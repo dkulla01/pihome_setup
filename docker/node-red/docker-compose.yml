@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  node-red:
+    image: nodered/node-red:latest
+    environment:
+      - TZ=America/New_York
+    networks:
+      traefik-net:
+        ipv4_address: 172.22.0.14
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nodered.rule=Host(`nodered.pihome.run`, `nr.pihome.run`)"
+      - "traefik.http.routers.nodered.entrypoints=websecure"
+      - "traefik.http.routers.nodered.tls=true"
+      - "traefik.http.services.nodered.loadbalancer.server.port=1880"
+      - "traefik.docker.network=traefik-net"
+      - "traefik.http.middlewares.redirect-nr.redirectregex.regex=^https://nr.pihome.run/(.*)"
+      - "traefik.http.middlewares.redirect-nr.redirectregex.replacement=https://nodered.pihome.run/$${1}"
+      - "traefik.http.middlewares.redirect-nr.redirectregex.permanent=true"
+      - "traefik.http.routers.nodered.middlewares=redirect-nr"
+    volumes:
+      - ./node-red-data:/data
+
+networks:
+  traefik-net:
+    external: true
