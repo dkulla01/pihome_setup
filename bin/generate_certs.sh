@@ -234,7 +234,7 @@ if [[ -n "$extra_mqtt_clients_env_var" ]]; then
   # nix the dummy element created by the trailing comma
   unset 'extra_mqtt_clients[-1]'
 
-  for mqtt_client_name in extra_mqtt_clients; do
+  for mqtt_client_name in "${extra_mqtt_clients[@]}"; do
     echoerr "creating the mqtt client certificate for $mqtt_client_name"
     certs_dirname="${cert_creation_dir}/$mqtt_client_name"
     build_certs \
