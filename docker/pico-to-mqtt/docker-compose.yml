@@ -2,7 +2,7 @@ version: '3'
 
 services:
   pico_to_mqtt:
-    image: pico_to_mqtt:latest
+    image: ghcr.io/dkulla01/pico_to_mqtt:latest
     volumes:
       - "./pico-to-mqtt-config:/etc/pico-to-mqtt/config"
       - "./pico-to-mqtt-ssl/mqtt/cert-${CERT_VERSION:?err}:/etc/pico-to-mqtt/mqtt/ssl/certs"
