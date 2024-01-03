@@ -10,7 +10,7 @@ services:
       - "./pico-to-mqtt-ssl/pylutron-caseta/cert-${CASETA_CERT_VERSION:?err}:/etc/pico-to-mqtt/pylutron-caseta/ssl/certs"
     restart: unless-stopped
     environment:
-      PICO_TO_MQTT_SETTINGS: "/etc/pico-to-mqtt/config/default-settings.toml:/etc/pico-to-mqtt/config/settings.toml:/etc/pico_to_mqtt/secrets.toml"
+      PICO_TO_MQTT_SETTINGS: "/etc/pico-to-mqtt/config/default-settings.toml:/etc/pico-to-mqtt/config/settings.toml:/etc/pico_to_mqtt/config/secrets.toml"
       LOGLEVEL": "${PICO_TO_MQTT_LOGLEVEL:-INFO}"
     networks:
       - traefik-net
