@@ -1,5 +1,4 @@
 [
-    "mqtt-explorer-client",
     "homeassistant-mqtt-client",
     "nodered-mqtt-client",
     "zigbee2mqtt-mqtt-client",
