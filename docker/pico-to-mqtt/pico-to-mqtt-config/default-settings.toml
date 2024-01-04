@@ -2,8 +2,8 @@
 [pico-to-mqtt]
 
 [pico-to-mqtt.mqtt-config]
-path_to_mqtt_client_cert = "/etc/pico-to-mqtt/mqtt/ssl/certs/pico-to-mqtt.crt"
-path_to_mqtt_client_key = "/etc/pico-to-mqtt/mqtt/ssl/certs/pico-to-mqtt.key"
+path_to_mqtt_client_cert = "/etc/pico-to-mqtt/mqtt/ssl/certs/pico-to-mqtt-mqtt-client.crt"
+path_to_mqtt_client_key = "/etc/pico-to-mqtt/mqtt/ssl/certs/pico-to-mqtt-mqtt-client.key"
 path_to_mqtt_client_ca = "/etc/pico-to-mqtt/mqtt/ssl/root-cert/pihome-ca.pem"
 hostname = "pihome.run"
 port = 8883
