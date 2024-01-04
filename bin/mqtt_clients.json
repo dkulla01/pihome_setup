@@ -1,6 +1,6 @@
 [
-    "mqtt-explorer-client",
     "homeassistant-mqtt-client",
     "nodered-mqtt-client",
-    "zigbee2mqtt-mqtt-client"
+    "zigbee2mqtt-mqtt-client",
+    "pico-to-mqtt-mqtt-client"
 ]

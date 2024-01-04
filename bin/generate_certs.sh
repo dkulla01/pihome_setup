@@ -223,4 +223,29 @@ jq --raw-output '.[]' "$mqtt_client_list_file" | while read -r mqtt_client_name;
     "$root_cert_keyfile" \
     "$root_cert_key_password"
 done
+
+extra_mqtt_clients_env_var="EXTRA_MQTT_CLIENTS"
+if [[ -n "$extra_mqtt_clients_env_var" ]]; then
+  echoerr "creating extra mqtt clients specified by ${extra_mqtt_clients_env_var}"
+  # add an extra comment to end of the env var value to make sure we
+  # capture the last value and nix the trailing newline
+  readarray -t -d',' extra_mqtt_clients <<< "${!extra_mqtt_clients_env_var},";
+  
+  # nix the dummy element created by the trailing comma
+  unset 'extra_mqtt_clients[-1]'
+
+  for mqtt_client_name in "${extra_mqtt_clients[@]}"; do
+    echoerr "creating the mqtt client certificate for $mqtt_client_name"
+    certs_dirname="${cert_creation_dir}/$mqtt_client_name"
+    build_certs \
+      "$certs_dirname" \
+      "$mqtt_client_name" \
+      "$mqtt_client_name.pihome.run" \
+      "$mosquitto_sans_domains_file" \
+      "$root_cert_pemfile" \
+      "$root_cert_keyfile" \
+      "$root_cert_key_password"
+  done
+fi
+
 echoerr 'done creating the mqtt client certificates'

@@ -1,18 +1,56 @@
+# ignore the get-docker shell script
 get-docker.sh
-ssl/
+
+# ignore ssl/certificate files
+**/ssl/
+**/*-ssl/
+*.crt
+*.key
+*.pem
+*.csr
+*.ext
+certs/
+cert-*/
+root-cert-*/
+
+# pico_to_mqtt: ignore secrets and custom settings
+secrets.toml
+settings.toml
+
+# traefik: ignore auth files
+auth/
+
+# pihole: ignore etc files
+**/pihole/etc-pihole/
+**/pihole/etc-dnsmasq.d/
+
+# zigbee2mqtt
+# ignore passwords, secrets
 passwordfile
 secret.yaml
-auth/
-etc-*/
-mosquitto-ssl/
-zigbee2mqtt-ssl/
+
+# ignore host-specific configuration (generated from template files)
 **/zigbee2mqtt-data/configuration.yaml
+
+# ignore z2m state information
 **/zigbee2mqtt-data/coordinator_backup.json
 **/zigbee2mqtt-data/database.db
 **/zigbee2mqtt-data/log/
 **/zigbee2mqtt-data/state.json
+
+# homebridge
 **/homebridge/volumes
+
+# homeassistant
 **/home-assistant.log*
 **/home-assistant_v2.db*
 **/homeassistant-config/.storage/
 **/homeassistant-config/blueprints/
+**/homeassistant-config/scenes.yaml
+
+# node-red
+# ignore host-specific data
+**/node-red-data/**
+
+# but leave the placeholder dir/file in place
+!**/node-red-data/README.md
