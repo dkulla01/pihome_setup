@@ -97,7 +97,7 @@ function copy_mqtt_client_certs() {
   cp "$root_cert" "$root_cert_destination_dir"
   
   mkdir -p "$client_cert_destination_dir"
-  cp "$cert_file", "$key_file" "$client_cert_destination_dir"
+  cp "$cert_file" "$key_file" "$client_cert_destination_dir"
 }
 
 echoerr "checking for the mqtt client certs"
