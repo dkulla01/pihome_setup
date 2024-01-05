@@ -4,10 +4,10 @@ services:
     image: eclipse-mosquitto:2.0
     restart: unless-stopped
     volumes:
-      - "./mosquitto-data:/mosquitto"
-      - "./mosquitto-ssl/cert-${CERT_VERSION:?err}:/mosquitto/conf/ssl/cert"
-      - "./mosquitto-ssl/root-cert-${ROOT_CERT_VERSION:?err}:/mosquitto/conf/ssl/root-cert"
-      - "./mosquitto-passwd:/mosquitto/conf/passwd"
+      - "./mosquitto-data:/mosquitto/data"
+      - "./mosquitto-ssl/cert-${CERT_VERSION:?err}:/mosquitto/conf/ssl/cert:ro"
+      - "./mosquitto-ssl/root-cert-${ROOT_CERT_VERSION:?err}:/mosquitto/conf/ssl/root-cert:ro"
+      - "./mosquitto-passwd:/mosquitto/conf/passwd:ro"
     ports:
       - "8883:8883"
       - "9001:9001"

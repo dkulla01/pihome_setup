@@ -82,6 +82,22 @@ function check_mqtt_client_certs() {
   fi
 }
 
+function copy_mqtt_client_certs() {
+  local root_cert=$1
+  local client_name=$2
+  local ssl_destination_dir=$3
+  local cert_dir="${versioned_cert_dir}/${client_name}"
+  local cert_file="${cert_dir}/${client_name}.crt"
+  local key_file="${cert_dir}/${client_name}.key"
+  local root_cert_destination_dir="${ssl_destination_dir}/root-cert-${ROOT_CERT_VERSION}"
+  local client_cert_destination_dir="${ssl_destination_dir}/cert-${CERT_VERSION}"
+
+  mkdir -p "$root_cert_destination_dir"
+  cp "$root_cert" "$root_cert_destination_dir"
+  
+  mkdir -p "$client_cert_destination_dir"
+  cp "$cert_file", "$key_file" "$client_cert_destination_dir"
+}
 
 echoerr "checking for the mqtt client certs"
 zigbee2mqtt_mqtt_client_name='zigbee2mqtt-mqtt-client'
@@ -148,6 +164,14 @@ zigbee2mqtt_cert_dir="${versioned_cert_dir}/${zigbee2mqtt_mqtt_client_name}"
 zigbee2mqtt_cert_file="${zigbee2mqtt_cert_dir}/${zigbee2mqtt_mqtt_client_name}.crt"
 zigbee2mqtt_key_file="${zigbee2mqtt_cert_dir}/${zigbee2mqtt_mqtt_client_name}.key"
 cp "$zigbee2mqtt_cert_file" "$zigbee2mqtt_key_file" "$zigbee2mqtt_ssl_cert_destination_dir"
+
+echoerr 'copying node-red mqtt client certs'
+node_red_project_dir="${docker_project_dir}/node-red"
+node_red_mqtt_client_root_cert_dir="${node_red_project_dir}/node-red-data/node-red-mqtt-ssl/root-cert-${CERT_VERSION}"
+node_red_mqtt_client_cert_dir="${node_red_project_dir}/node-red-data/node-red-mqtt-ssl/cert-${CERT_VERSION}"
+
+mkdir -p "$node_red_mqtt_client_root_cert_dir"
+cp "$root_cert_file" "$node_red_mqtt_client_root_cert_dir"
 
 echoerr "copying pico_to_mqtt mqtt client certs (note, not pylutron caseta certs)"
 pico_to_mqtt_destination_dir="${docker_project_dir}/pico-to-mqtt"
