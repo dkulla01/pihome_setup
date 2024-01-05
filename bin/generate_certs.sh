@@ -64,6 +64,7 @@ function build_certs() {
     echoerr "creating a private key for \`$cert_prefix\`: \`$cert_private_key_file\`."
 
     openssl genrsa -out "$cert_private_key_file" 4096
+    sudo chmod 644 "$cert_private_key_file"
 
     local csr_file="${certs_dirname}/${cert_prefix}.csr"
     echoerr "creating a CSR file: "
