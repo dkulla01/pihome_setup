@@ -113,7 +113,7 @@ done
 
 required_mqtt_clients_as_str=":$(printf '%s:' "${required_mqtt_clients[@]}")"
 for mqtt_client in "${required_mqtt_clients[@]}"; do
-  if ! echo "$required_mqtt_clients_as_str" | grep -Fxqz -- ":${mqtt_client}:"; then
+  if ! echo "$required_mqtt_clients_as_str" | grep -Fqz -- ":${mqtt_client}:"; then
     echoerr "missing requried mqtt certificates. client name: ${mqtt_client}. exiting now."
     exit 1
   fi
