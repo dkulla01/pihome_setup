@@ -251,3 +251,5 @@ else
 fi
 
 echoerr 'done creating the mqtt client certificates'
+echoerr "root cert version: ${ROOT_CERT_VERSION}"
+echoerr "cert version: ${CERT_VERSION}"
