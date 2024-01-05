@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 project_dir=$(dirname "$script_dir")
@@ -100,28 +101,23 @@ function copy_mqtt_client_certs() {
 }
 
 echoerr "checking for the mqtt client certs"
-zigbee2mqtt_mqtt_client_name='zigbee2mqtt-mqtt-client'
-zigbee2mqtt_mqtt_client_name_present=false
-
-pico_to_mqtt_mqtt_client_name='pico-to-mqtt-mqtt-client'
-pico_to_mqtt_mqtt_client_name_present=false
+required_mqtt_clients=(\
+  'zigbee2mqtt-mqtt-client' \
+  'pico-to-mqtt-mqtt-client' \
+  'node-red-mqtt-client'\
+  )
 
 for mqtt_client in "${all_mqtt_clients[@]}"; do
   check_mqtt_client_certs "$mqtt_client"
-  if [[ "$mqtt_client" == "$zigbee2mqtt_mqtt_client_name" ]]; then
-    zigbee2mqtt_mqtt_client_name_present=true
-  elif [[ "$mqtt_client" == "$pico_to_mqtt_mqtt_client_name" ]]; then
-    pico_to_mqtt_mqtt_client_name_present=true
-  fi
 done
 
-if [[ ! $zigbee2mqtt_mqtt_client_name_present ]]; then
-  echoerr "${zigbee2mqtt_mqtt_client_name} must be present in mqtt-clients.json config file"
-  exit 1
-elif [[ ! $pico_to_mqtt_mqtt_client_name_present ]]; then
-  echoerr "${pico_to_mqtt_mqtt_client_name} must be present in mqtt-clients.json config file"
-  exit 1
-fi
+printf -v required_mqtt_clients_as_str '%s\0' "${required_mqtt_clients[@]}"
+for mqtt_client in "${required_mqtt_clients[@]}"; do
+  if ! echo "$required_mqtt_clients_as_str" | grep -Fxqz -- "$mqtt_client"; then
+    echoerr "missing requried mqtt certificates. client name: ${mqtt_client}. exiting now."
+    exit 1
+  fi
+done
 
 
 # at this point, all of the certs and keys we want exist and look good, so let's start copying them.
@@ -145,9 +141,6 @@ zigbee2mqtt_dir="${docker_project_dir}/zigbee2mqtt"
 mosquitto_ssl_root_cert_destination_dir="${zigbee2mqtt_dir}/mosquitto-ssl/root-cert-${ROOT_CERT_VERSION}"
 mosquitto_ssl_cert_destination_dir="${zigbee2mqtt_dir}/mosquitto-ssl/cert-${CERT_VERSION}"
 
-zigbee2mqtt_ssl_root_cert_destination_dir="${zigbee2mqtt_dir}/zigbee2mqtt-ssl/root-cert-${ROOT_CERT_VERSION}"
-zigbee2mqtt_ssl_cert_destination_dir="${zigbee2mqtt_dir}/zigbee2mqtt-ssl/cert-${CERT_VERSION}"
-
 echoerr "copying mosquitto server certs"
 mkdir -p "$mosquitto_ssl_root_cert_destination_dir"
 cp "$root_cert_file" "$mosquitto_ssl_root_cert_destination_dir"
@@ -156,36 +149,17 @@ mkdir -p "$mosquitto_ssl_cert_destination_dir"
 cp "$mqtt_server_cert_file" "$mqtt_server_cert_key_file" "$mosquitto_ssl_cert_destination_dir"
 
 echoerr "copying zigbee2mqtt client certs"
-mkdir -p "$zigbee2mqtt_ssl_root_cert_destination_dir"
-cp "$root_cert_file" "$zigbee2mqtt_ssl_root_cert_destination_dir"
-
-mkdir -p "$zigbee2mqtt_ssl_cert_destination_dir"
-zigbee2mqtt_cert_dir="${versioned_cert_dir}/${zigbee2mqtt_mqtt_client_name}"
-zigbee2mqtt_cert_file="${zigbee2mqtt_cert_dir}/${zigbee2mqtt_mqtt_client_name}.crt"
-zigbee2mqtt_key_file="${zigbee2mqtt_cert_dir}/${zigbee2mqtt_mqtt_client_name}.key"
-cp "$zigbee2mqtt_cert_file" "$zigbee2mqtt_key_file" "$zigbee2mqtt_ssl_cert_destination_dir"
+copy_mqtt_client_certs "$root_cert_file" 'zigbee2mqtt-mqtt-client' "${zigbee2mqtt_dir}/zigbee2mqtt-ssl"
 
 echoerr 'copying node-red mqtt client certs'
 node_red_project_dir="${docker_project_dir}/node-red"
-node_red_mqtt_client_root_cert_dir="${node_red_project_dir}/node-red-data/node-red-mqtt-ssl/root-cert-${CERT_VERSION}"
-node_red_mqtt_client_cert_dir="${node_red_project_dir}/node-red-data/node-red-mqtt-ssl/cert-${CERT_VERSION}"
-
-mkdir -p "$node_red_mqtt_client_root_cert_dir"
-cp "$root_cert_file" "$node_red_mqtt_client_root_cert_dir"
+node_red_ssl_dir="${node_red_project_dir}/node-red-mqtt-client-ssl"
+copy_mqtt_client_certs "$root_cert_file" 'node-red-mqtt-client' "$node_red_ssl_dir"
 
 echoerr "copying pico_to_mqtt mqtt client certs (note, not pylutron caseta certs)"
-pico_to_mqtt_destination_dir="${docker_project_dir}/pico-to-mqtt"
-pico_to_mqtt_mqtt_ssl_root_cert_destination_dir="${pico_to_mqtt_destination_dir}/pico-to-mqtt-ssl/mqtt/root-cert-${ROOT_CERT_VERSION}"
-pico_to_mqtt_mqtt_ssl_cert_destination_dir="${pico_to_mqtt_destination_dir}/pico-to-mqtt-ssl/mqtt/cert-${CERT_VERSION}"
-
-mkdir -p "$pico_to_mqtt_mqtt_ssl_root_cert_destination_dir"
-cp "$root_cert_file" "$pico_to_mqtt_mqtt_ssl_root_cert_destination_dir"
-
-mkdir -p "$pico_to_mqtt_mqtt_ssl_cert_destination_dir"
-pico_to_mqtt_cert_dir="${versioned_cert_dir}/${pico_to_mqtt_mqtt_client_name}"
-pico_to_mqtt_mqtt_cert_file="$pico_to_mqtt_cert_dir/${pico_to_mqtt_mqtt_client_name}.crt"
-pico_to_mqtt_mqtt_key_file="$pico_to_mqtt_cert_dir/${pico_to_mqtt_mqtt_client_name}.key"
-cp "$pico_to_mqtt_mqtt_cert_file" "$pico_to_mqtt_mqtt_key_file" "$pico_to_mqtt_mqtt_ssl_cert_destination_dir"
+pico_to_mqtt_project_dir="${docker_project_dir}/pico-to-mqtt"
+pico_to_mqtt_mqtt_ssl_destination_dir="${pico_to_mqtt_project_dir}/pico-to-mqtt-ssl/mqtt"
+copy_mqtt_client_certs "$root_cert_file" 'pico-to-mqtt-mqtt-client' "$pico_to_mqtt_mqtt_ssl_destination_dir"
 
 echoerr "done copying all of the certs that can be automatically copied. You still \
 need to manually add mqtt client certificates and keys to mqtt-explorer and homeassistant."
