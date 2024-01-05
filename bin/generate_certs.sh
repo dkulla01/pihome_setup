@@ -246,6 +246,8 @@ if [[ -n "${!extra_mqtt_clients_env_var}" ]]; then
       "$root_cert_keyfile" \
       "$root_cert_key_password"
   done
+else
+  echo "no extra mqtt clients configured via \$${extra_mqtt_clients_env_var}"
 fi
 
 echoerr 'done creating the mqtt client certificates'
