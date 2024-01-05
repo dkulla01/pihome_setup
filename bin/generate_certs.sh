@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # make sure that globs that don't match anything return null 
 shopt -s nullglob
 
@@ -129,6 +131,7 @@ most_recent_root_cert_dir=
 root_cert_dir_prefix='root-cert'
 pihome_ca_cert_filename='pihome-ca.pem'
 pihome_ca_key_filename='pihome-ca.key'
+root_cert_version=
 
 if [ "${#root_cert_dirs[@]}" -eq 0 ]; then
   most_recent_root_cert_dir="${parent_dir}/ssl/${root_cert_dir_prefix}-${cert_timestamp_version}"
@@ -140,6 +143,7 @@ if [ "${#root_cert_dirs[@]}" -eq 0 ]; then
     "$pihome_ca_key_filename" \
     "$root_cert_key_password" \
     "$cert_timestamp_version"
+    root_cert_version="$cert_timestamp_version"
 elif [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_cert_filename}" ] \
       || [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_key_filename}" ] ; then
   recent_but_malformed_ca_dir=${root_cert_dirs[-1]}
@@ -154,6 +158,7 @@ elif [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_cert_filename}" ] \
     "$pihome_ca_key_filename" \
     "$root_cert_key_password" \
     "$cert_timestamp_version"
+    root_cert_version="$cert_timestamp_version"
 else
   most_recent_root_cert_dir=${root_cert_dirs[-1]}
   
@@ -170,6 +175,9 @@ else
     fi
 
     echoerr "using most recent root cert inside ${most_recent_root_cert_dir}"
+    root_cert_dir_basename=$(basename "$most_recent_root_cert_dir")
+    root_cert_version="${root_cert_dir_basename#"$root_cert_dir_prefix-"}"
+
   else
     most_recent_root_cert_dir="${parent_dir}/ssl/${root_cert_dir_prefix}-${cert_timestamp_version}"
     echoerr "creating a root cert dir at ${most_recent_root_cert_dir}"
@@ -251,5 +259,5 @@ else
 fi
 
 echoerr 'done creating the mqtt client certificates'
-echoerr "root cert version: ${ROOT_CERT_VERSION}"
-echoerr "cert version: ${CERT_VERSION}"
+echoerr "root cert version: ${root_cert_version}"
+echoerr "cert version: ${cert_timestamp_version}"
