@@ -21,6 +21,8 @@ services:
       - "traefik.http.routers.nodered.middlewares=redirect-nr"
     volumes:
       - ./node-red-data:/data
+      - ./node-red-mqtt-client-ssl/cert-${CERT_VERSION:?err}:/etc/node-red/ssl/cert:ro
+      - ./node-red-mqtt-client-ssl/root-cert-${ROOT_CERT_VERSION:?err}:/etc/node-red/ssl/root-cert:ro
 
 networks:
   traefik-net:
