@@ -32,7 +32,7 @@ echoerr "creating the nodered custom component directory \`${hass_node_red_custo
 mkdir -p "$hass_node_red_custom_component_dir"
 
 echoerr "moving hass-node-red custom component files into the nodered custom component directory"
-mv "${tempdir}/custom_components/nodered/*" "$hass_node_red_custom_component_dir"
+mv "${tempdir}/custom_components/nodered"/* "$hass_node_red_custom_component_dir"
 
 echoerr "done installing hass-node-red custom component. Restart homeassistant and \
 install the node-red integration from the UI"
