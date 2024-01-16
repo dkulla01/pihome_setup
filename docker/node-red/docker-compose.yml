@@ -5,8 +5,8 @@ services:
     image: nodered/node-red:latest
     environment:
       - TZ=America/New_York
-      - MQTT_CLIENT_CERT/etc/node-red/ssl/cert/node-red-mqtt-client.crt
-      - MQTT_CLIENT_KEY/etc/node-red/ssl/cert/node-red-mqtt-client.key
+      - MQTT_CLIENT_CERT=/etc/node-red/ssl/cert/node-red-mqtt-client.crt
+      - MQTT_CLIENT_KEY=/etc/node-red/ssl/cert/node-red-mqtt-client.key
       - MQTT_CA_CERT=/etc/node-red/ssl/root-cert/pihome-ca.run
       - MQTT_HOSTNAME=pihome.run
       - MQTT_PORT=8883
