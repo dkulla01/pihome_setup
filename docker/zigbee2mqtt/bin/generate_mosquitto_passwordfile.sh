@@ -33,24 +33,24 @@ if [[ "$mqtt_password" != "$confirm_password" ]]; then
   exit 1
 fi
 
-mosquitto_passwd_dirname='mosquitto-passwd'
-mosquitto_passwd_dir="$zigbee2mqtt_root_dir/$mosquitto_passwd_dirname"
+mosquitto_config_dirname='mosquitto-config'
+mosquitto_config_dir="$zigbee2mqtt_root_dir/$mosquitto_config_dirname"
 mosquitto_passwd_filename='passwordfile'
-mosquitto_passwd_file="$mosquitto_passwd_dir/$mosquitto_passwd_filename"
+mosquitto_passwd_file="$mosquitto_config_dir/$mosquitto_passwd_filename"
 
-echoerr "making sure the mosquitto-passwd dir \`$mosquitto_passwd_dir\` exists"
-mkdir -p "$mosquitto_passwd_dir"
+echoerr "making sure the mosquitto-config dir \`$mosquitto_config_dir\` exists"
+mkdir -p "$mosquitto_config_dir"
 
 if [ -f "$mosquitto_passwd_file" ]; then
   echoerr "a mosquitto passwd file already exists: \`$mosquitto_passwd_file\`. if you need a new one, delete this file"
 else
   echoerr "creating a mosquitto passwd file with user \`$mosquitto_username\`"
-  touch "$mosquitto_passwd_dirname/$mosquitto_passwd_filename"
-  docker run -v "$mosquitto_passwd_dir:/$mosquitto_passwd_dirname" \
+  touch "$mosquitto_config_dirname/$mosquitto_passwd_filename"
+  docker run -v "$mosquitto_config_dir:/$mosquitto_config_dirname" \
     -w / \
     -it eclipse-mosquitto:2.0 mosquitto_passwd \
     -b \
-    "/$mosquitto_passwd_dirname/$mosquitto_passwd_filename" \
+    "/$mosquitto_config_dirname/$mosquitto_passwd_filename" \
     "$mosquitto_username" \
     "$mqtt_password"
 

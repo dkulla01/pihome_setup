@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # make sure that globs that don't match anything return null 
 shopt -s nullglob
 
@@ -62,6 +64,7 @@ function build_certs() {
     echoerr "creating a private key for \`$cert_prefix\`: \`$cert_private_key_file\`."
 
     openssl genrsa -out "$cert_private_key_file" 4096
+    sudo chmod 644 "$cert_private_key_file"
 
     local csr_file="${certs_dirname}/${cert_prefix}.csr"
     echoerr "creating a CSR file: "
@@ -129,6 +132,7 @@ most_recent_root_cert_dir=
 root_cert_dir_prefix='root-cert'
 pihome_ca_cert_filename='pihome-ca.pem'
 pihome_ca_key_filename='pihome-ca.key'
+root_cert_version=
 
 if [ "${#root_cert_dirs[@]}" -eq 0 ]; then
   most_recent_root_cert_dir="${parent_dir}/ssl/${root_cert_dir_prefix}-${cert_timestamp_version}"
@@ -140,6 +144,7 @@ if [ "${#root_cert_dirs[@]}" -eq 0 ]; then
     "$pihome_ca_key_filename" \
     "$root_cert_key_password" \
     "$cert_timestamp_version"
+    root_cert_version="$cert_timestamp_version"
 elif [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_cert_filename}" ] \
       || [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_key_filename}" ] ; then
   recent_but_malformed_ca_dir=${root_cert_dirs[-1]}
@@ -154,6 +159,7 @@ elif [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_cert_filename}" ] \
     "$pihome_ca_key_filename" \
     "$root_cert_key_password" \
     "$cert_timestamp_version"
+    root_cert_version="$cert_timestamp_version"
 else
   most_recent_root_cert_dir=${root_cert_dirs[-1]}
   
@@ -170,6 +176,9 @@ else
     fi
 
     echoerr "using most recent root cert inside ${most_recent_root_cert_dir}"
+    root_cert_dir_basename=$(basename "$most_recent_root_cert_dir")
+    root_cert_version="${root_cert_dir_basename#"$root_cert_dir_prefix-"}"
+
   else
     most_recent_root_cert_dir="${parent_dir}/ssl/${root_cert_dir_prefix}-${cert_timestamp_version}"
     echoerr "creating a root cert dir at ${most_recent_root_cert_dir}"
@@ -225,7 +234,7 @@ jq --raw-output '.[]' "$mqtt_client_list_file" | while read -r mqtt_client_name;
 done
 
 extra_mqtt_clients_env_var="EXTRA_MQTT_CLIENTS"
-if [[ -n "$extra_mqtt_clients_env_var" ]]; then
+if [[ -n "${!extra_mqtt_clients_env_var}" ]]; then
   echoerr "creating extra mqtt clients specified by ${extra_mqtt_clients_env_var}"
   # add an extra comment to end of the env var value to make sure we
   # capture the last value and nix the trailing newline
@@ -246,6 +255,10 @@ if [[ -n "$extra_mqtt_clients_env_var" ]]; then
       "$root_cert_keyfile" \
       "$root_cert_key_password"
   done
+else
+  echo "no extra mqtt clients configured via \$${extra_mqtt_clients_env_var}"
 fi
 
 echoerr 'done creating the mqtt client certificates'
+echoerr "root cert version: ${root_cert_version}"
+echoerr "cert version: ${cert_timestamp_version}"

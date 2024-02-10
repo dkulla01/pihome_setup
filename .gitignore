@@ -47,6 +47,8 @@ secret.yaml
 **/homeassistant-config/.storage/
 **/homeassistant-config/blueprints/
 **/homeassistant-config/scenes.yaml
+**/homeassistant-config/automations.yaml
+**/homeassistant-config/custom_components/
 
 # node-red
 # ignore host-specific data

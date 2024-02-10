@@ -4,10 +4,10 @@ services:
     image: eclipse-mosquitto:2.0
     restart: unless-stopped
     volumes:
-      - "./mosquitto-data:/mosquitto"
-      - "./mosquitto-ssl/cert-${CERT_VERSION:?err}:/mosquitto/conf/ssl/cert"
-      - "./mosquitto-ssl/root-cert-${ROOT_CERT_VERSION:?err}:/mosquitto/conf/ssl/root-cert"
-      - "./mosquitto-passwd:/mosquitto/conf/passwd"
+      - "./mosquitto-data:/mosquitto/data"
+      - "./mosquitto-config:/mosquitto/conf:ro"
+      - "./mosquitto-ssl/cert-${CERT_VERSION:?err}:/mosquitto-ssl/cert:ro"
+      - "./mosquitto-ssl/root-cert-${ROOT_CERT_VERSION:?err}:/mosquitto-ssl/root-cert:ro"
     ports:
       - "8883:8883"
       - "9001:9001"
@@ -21,10 +21,10 @@ services:
     restart: unless-stopped
     image: koenkk/zigbee2mqtt
     volumes:
-      - ./zigbee2mqtt-data:/app/data
-      - ./zigbee2mqtt-ssl/cert-${CERT_VERSION:?err}:/app/conf/ssl/cert
-      - ./zigbee2mqtt-ssl/root-cert-${ROOT_CERT_VERSION:?err}:/app/conf/ssl/root-cert
-      - /run/udev:/run/udev:ro
+      - './zigbee2mqtt-data:/app/data'
+      - './zigbee2mqtt-ssl/cert-${CERT_VERSION:?err}:/app/conf/ssl/cert:ro'
+      - './zigbee2mqtt-ssl/root-cert-${ROOT_CERT_VERSION:?err}:/app/conf/ssl/root-cert:ro'
+      - '/run/udev:/run/udev:ro'
     networks:
       traefik-net:
         ipv4_address: 172.22.0.13
