@@ -45,7 +45,7 @@ else
   
   read -r -p "Enter the email address to assign to this ssh key: " ssh_key_email_address
   printf '\n'
-
+  echoerr "creating ssh keys for email address \"${ssh_key_email_address}\""
   read -r -p "Using email address \`${ssh_key_email_address}\`. Is this correct? (Y/n)? " email_address_confirmation
   if [ "$email_address_confirmation" != "Y" ]; then
     echoerr "SSH key generation cancelled. Exiting now."
@@ -56,6 +56,7 @@ else
     echoerr "there was a problem generating the ssh key"
     exit 1
   fi
+  echoerr 'done creating ssh keys'
 fi
 
 # ssh -T returns 1 on success, other nonzero code on failure
