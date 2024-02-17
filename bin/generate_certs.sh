@@ -19,6 +19,7 @@ fi
 
 top_private_domain="${PIHOME_HOSTNAME}.${PIHOME_TLD}"
 top_private_domain_hostname="$PIHOME_HOSTNAME"
+top_level_domain="$PIHOME_TLD"
 
 echoerr "creating certificates with top private domain\`${top_private_domain}\` and tpd hostname \`${top_private_domain_hostname}\`"
 
@@ -35,7 +36,7 @@ root_cert_dirs=( "$ssl_dir"/root-cert-* )
 most_recent_root_cert_dir=
 root_cert_dir_prefix='root-cert'
 root_cert_file_prefix="${top_private_domain_hostname}-ca"
-root_ca_cert_subject_name="${root_cert_file_prefix}.run"
+root_ca_cert_subject_name="${root_cert_file_prefix}.${top_level_domain}"
 root_ca_cert_filename="${root_cert_file_prefix}.pem"
 root_ca_key_filename="${root_cert_file_prefix}.key"
 root_cert_version=
@@ -236,7 +237,7 @@ mosquitto_server_cert_creation_dir="${cert_creation_dir}/mosquitto-server"
 build_certs \
   "$mosquitto_server_cert_creation_dir" \
   'server' \
-  "${top_private_domain_hostname}-mqtt-server.run" \
+  "${top_private_domain_hostname}-mqtt-server.${top_level_domain}" \
   "$mosquitto_sans_subdomains_file" \
   "$root_cert_pemfile" \
   "$root_cert_keyfile" \
