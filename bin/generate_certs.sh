@@ -7,13 +7,46 @@ shopt -s nullglob
 
 script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source "$script_dir/echoerr.sh"
+if [[ -v PIHOME_HOSTNAME ]]; then
+  echoerr "PIHOME_HOSTNAME environment variable is not set"
+  exit 1
+fi
+
+if [[ -v PIHOME_TLD ]]; then
+  echoerr "PIHOME_TLD environment variable is not set"
+  exit 1
+fi
+
+top_private_domain="${PIHOME_HOSTNAME}.${PIHOME_TLD}"
+top_private_domain_hostname="$PIHOME_HOSTNAME"
+
+echoerr "creating certificates with top private domain\`${top_private_domain}\` and tpd hostname \`${top_private_domain_hostname}\`"
+
+cert_timestamp_version=$(date --utc +"%F-%H_%M_%S")
+
+parent_dir=$(dirname "$script_dir")
+ssl_dir="${parent_dir}/ssl"
+sans_domains_file="${script_dir}/pihome_domains.json"
+mosquitto_sans_domains_file="${script_dir}/mosquitto_domains.json"
+mqtt_client_list_file="${script_dir}/mqtt_clients.json"
+
+root_cert_dirs=( "$ssl_dir"/root-cert-* )
+
+most_recent_root_cert_dir=
+root_cert_dir_prefix='root-cert'
+root_cert_file_prefix="${top_private_domain_hostname}-ca"
+pihome_ca_cert_subject_name="${root_cert_file_prefix}.run"
+pihome_ca_cert_filename="${root_cert_file_prefix}.pem"
+pihome_ca_key_filename="${root_cert_file_prefix}.key"
+root_cert_version=
 
 function create_root_cert() {
   local root_cert_dirname=$1
-  local root_cert_filename=$2
-  local root_cert_key_filename=$3
-  local root_cert_key_password=$4
-  local cert_timestamp_version=$5
+  local root_cert_subject_name=$2
+  local root_cert_filename=$3
+  local root_cert_key_filename=$4
+  local root_cert_key_password=$5
+  local cert_timestamp_version=$6
 
   root_cert_key_file="${root_cert_dirname}/${root_cert_key_filename}"
   root_cert_file="${root_cert_dirname}/${root_cert_filename}"
@@ -34,10 +67,10 @@ function create_root_cert() {
     -sha256 \
     -days 3650 \
     -out "$root_cert_file" \
-    -subj "/CN=pihome-ca.run"
+    -subj "/CN=${root_cert_subject_name}"
 
-  echoerr "copying the pihome-ca root certificate to the ca-certificates dir"
-  sudo cp "$root_cert_file" "/usr/local/share/ca-certificates/pihome-ca-${cert_timestamp_version}.crt"
+  echoerr "copying the root certificate to the ca-certificates dir"
+  sudo cp "$root_cert_file" "/usr/local/share/ca-certificates/${root_cert_filename}"
 
   echoerr "updating the certificates store"
   sudo update-ca-certificates
@@ -54,7 +87,7 @@ function build_certs() {
   local root_cert_key_password=$7
 
   if [ -d "$certs_dirname" ]; then
-    echoerr "it looks like a \`$cert_prefix\` certificates directory already exists: \`$certs_dirname\`."\
+    echoerr "it looks like a \`$certs_dirname\` certificates directory already exists: \`$certs_dirname\`."\
     "If you need new certificates, remove this directory."
   else
     echoerr "creating a \`$cert_prefix\` certificate in \`$certs_dirname\` from our ca root certificate (\`$ca_pemfile\`)"
@@ -108,14 +141,6 @@ if ! command -v jq &> /dev/null; then
   exit 1
 fi
 
-cert_timestamp_version=$(date --utc +"%F-%H_%M_%S")
-
-parent_dir=$(dirname "$script_dir")
-ssl_dir="${parent_dir}/ssl"
-pihome_sans_domains_file="${script_dir}/pihome_domains.json"
-mosquitto_sans_domains_file="${script_dir}/mosquitto_domains.json"
-mqtt_client_list_file="${script_dir}/mqtt_clients.json"
-
 read -r -s -p "enter your desired ca private key password: " root_cert_key_password
 printf '\n'
 read -r -s -p "confirm your ca private key password: " confirm_password
@@ -126,25 +151,18 @@ if [[ "$root_cert_key_password" != "$confirm_password" ]]; then
   exit 1
 fi
 
-root_cert_dirs=( "$ssl_dir"/root-cert-* )
-
-most_recent_root_cert_dir=
-root_cert_dir_prefix='root-cert'
-pihome_ca_cert_filename='pihome-ca.pem'
-pihome_ca_key_filename='pihome-ca.key'
-root_cert_version=
-
 if [ "${#root_cert_dirs[@]}" -eq 0 ]; then
   most_recent_root_cert_dir="${parent_dir}/ssl/${root_cert_dir_prefix}-${cert_timestamp_version}"
   echoerr "No root cert directory present. creating a root cert at ${most_recent_root_cert_dir}"
   mkdir -p "$most_recent_root_cert_dir"
   create_root_cert \
     "$most_recent_root_cert_dir" \
+    "$pihome_ca_cert_subject_name" \
     "$pihome_ca_cert_filename" \
     "$pihome_ca_key_filename" \
     "$root_cert_key_password" \
     "$cert_timestamp_version"
-    root_cert_version="$cert_timestamp_version"
+  root_cert_version="$cert_timestamp_version"
 elif [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_cert_filename}" ] \
       || [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_key_filename}" ] ; then
   recent_but_malformed_ca_dir=${root_cert_dirs[-1]}
@@ -155,11 +173,12 @@ elif [ ! -f  "${root_cert_dirs[-1]}/${pihome_ca_cert_filename}" ] \
   
   create_root_cert \
     "$most_recent_root_cert_dir" \
+    "$pihome_ca_cert_subject_name" \
     "$pihome_ca_cert_filename" \
     "$pihome_ca_key_filename" \
     "$root_cert_key_password" \
     "$cert_timestamp_version"
-    root_cert_version="$cert_timestamp_version"
+  root_cert_version="$cert_timestamp_version"
 else
   most_recent_root_cert_dir=${root_cert_dirs[-1]}
   
@@ -186,6 +205,7 @@ else
     
     create_root_cert \
       "$most_recent_root_cert_dir" \
+      "$pihome_ca_cert_subject_name" \
       "$pihome_ca_cert_filename" \
       "$pihome_ca_key_filename" \
       "$root_cert_key_password" \
@@ -201,9 +221,9 @@ root_cert_keyfile="${most_recent_root_cert_dir}/${pihome_ca_key_filename}"
 traefik_cert_creation_dir="${cert_creation_dir}/traefik"
 build_certs \
   "$traefik_cert_creation_dir" \
-  'pihome.run' \
-  'pihome.run' \
-  "$pihome_sans_domains_file" \
+  "$top_private_domain" \
+  "$top_private_domain" \
+  "$sans_domains_file" \
   "$root_cert_pemfile" \
   "$root_cert_keyfile" \
   "$root_cert_key_password"
@@ -212,7 +232,7 @@ mosquitto_server_cert_creation_dir="${cert_creation_dir}/mosquitto-server"
 build_certs \
   "$mosquitto_server_cert_creation_dir" \
   'server' \
-  'pihome-mqtt-server.run' \
+  "${top_private_domain_hostname}-mqtt-server.run" \
   "$mosquitto_sans_domains_file" \
   "$root_cert_pemfile" \
   "$root_cert_keyfile" \
@@ -226,7 +246,7 @@ jq --raw-output '.[]' "$mqtt_client_list_file" | while read -r mqtt_client_name;
   build_certs \
     "$certs_dirname" \
     "$mqtt_client_name" \
-    "$mqtt_client_name.pihome.run" \
+    "${mqtt_client_name}.${top_private_domain}" \
     "$mosquitto_sans_domains_file" \
     "$root_cert_pemfile" \
     "$root_cert_keyfile" \
@@ -249,7 +269,7 @@ if [[ -n "${!extra_mqtt_clients_env_var}" ]]; then
     build_certs \
       "$certs_dirname" \
       "$mqtt_client_name" \
-      "$mqtt_client_name.pihome.run" \
+      "${mqtt_client_name}.${top_private_domain}" \
       "$mosquitto_sans_domains_file" \
       "$root_cert_pemfile" \
       "$root_cert_keyfile" \
