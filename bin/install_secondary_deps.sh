@@ -104,12 +104,12 @@ if dpkg --compare-versions "$systemd_version" "<=" "252"; then
 fi
 
 
-python_minor_version='3.11'
+python_minor_version='3.12'
 if ! pyenv versions --bare | grep "$python_minor_version"; then
-  echoerr "installing the latest python 3.11 version"
+  echoerr "installing the latest python ${python_minor_version} version"
   pyenv install "$python_minor_version"
 
-  echoerr 'making python 3.11 the global python'
+  echoerr "making python ${python_minor_version} the global python"
   pyenv global "$python_minor_version"
 
   echoerr 'restarting the shell to pick up the pyenv changes'
