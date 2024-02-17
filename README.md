@@ -6,7 +6,7 @@ some scripts to get a raspberry pi set up for running some home automation stuff
 the first step is to add git to the raspberry pi and configure ssh keys. Get that done with:
 
 ```shell
-bash -c "(curl https://raw.githubusercontent.com/dkulla01/pihome_setup/main/bin/install_and_configure_git.sh)"
+bash -c "$(curl https://raw.githubusercontent.com/dkulla01/pihome_setup/main/bin/install_and_configure_git.sh)"
 ```
 
 This script will try to authenticate with github with those ssh keys, and it will direct you to the instructions for linking an ssh key on github.
