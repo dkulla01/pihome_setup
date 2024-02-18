@@ -6,12 +6,12 @@ project_dir=$(dirname "$script_dir")
 ssl_certs_dir="${project_dir}/ssl"
 
 source "$script_dir/echoerr.sh"
-if [[ -v PIHOME_HOSTNAME ]]; then
+if [[ ! -v PIHOME_HOSTNAME ]]; then
   echoerr "PIHOME_HOSTNAME environment variable is not set"
   exit 1
 fi
 
-if [[ -v PIHOME_TLD ]]; then
+if [[ ! -v PIHOME_TLD ]]; then
   echoerr "PIHOME_TLD environment variable is not set"
   exit 1
 fi
