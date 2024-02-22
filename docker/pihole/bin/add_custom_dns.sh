@@ -22,13 +22,13 @@ echoerr "the LAN address of the eth0 interface is ${ip4}"
 
 mkdir -p "$dnsmasq_conf_dir"
 
-dnsmasq_wildcard_dns_conf_filename="wildcard-${PIHOME_HOSTNAME:?err}-dot-${PIHOME_TPD:?err}-dns.conf"
+dnsmasq_wildcard_dns_conf_filename="wildcard-${PIHOME_HOSTNAME:?err}-dot-${PIHOME_TLD:?err}-dns.conf"
 dnsmasq_wildcard_dns_conf_file="${dnsmasq_conf_dir}/${dnsmasq_wildcard_dns_conf_filename}"
 
 echoerr "creating a dnsmasq wildcard DNS entry in \`${dnsmasq_wildcard_dns_conf_file}\` \
 to point \`*.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}\` to \`${ip4}\`"
 cat <<EOF > "$dnsmasq_wildcard_dns_conf_file"
-address=/${PIHOME_HOSTNAME:?err}.${PIHOME_TPD:?err}/$ip4
+address=/${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}/$ip4
 EOF
 
 echoerr "confirm that the \`etc-pihole\` directory and docker-compose.yml file \
