@@ -32,13 +32,13 @@ services:
       - 'TZ=America/New_York'
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.z2m.rule=Host(`zigbee2mqtt.pihome.run`, `z2m.pihome.run`)"
+      - "traefik.http.routers.z2m.rule=Host(`zigbee2mqtt.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}`, `z2m.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}`)"
       - "traefik.http.routers.z2m.entrypoints=websecure"
       - "traefik.http.routers.z2m.tls=true"
       - "traefik.http.services.z2m.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik-net"
-      - "traefik.http.middlewares.redirect-z2m.redirectregex.regex=^https://z2m.pihome.run/(.*)"
-      - "traefik.http.middlewares.redirect-z2m.redirectregex.replacement=https://zigbee2mqtt.pihome.run/$${1}"
+      - "traefik.http.middlewares.redirect-z2m.redirectregex.regex=^https://z2m.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}/(.*)"
+      - "traefik.http.middlewares.redirect-z2m.redirectregex.replacement=https://zigbee2mqtt.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}/$${1}"
       - "traefik.http.middlewares.redirect-z2m.redirectregex.permanent=true"
       - "traefik.http.routers.z2m.middlewares=redirect-z2m"
     devices:

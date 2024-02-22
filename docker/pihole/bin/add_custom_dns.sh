@@ -20,21 +20,15 @@ ip4=$(ip -o -4  addr list eth0 | awk '{print $4}' | cut -d/ -f1)
 
 echoerr "the LAN address of the eth0 interface is ${ip4}"
 
-if [ ! -d "$dnsmasq_conf_dir" ]; then
-  mkdir "$dnsmasq_conf_dir"
-fi
+mkdir -p "$dnsmasq_conf_dir"
 
-dnsmasq_wildcard_dns_conf_filename="wildcard-pihome-dot-run-dns.conf"
+dnsmasq_wildcard_dns_conf_filename="wildcard-${PIHOME_HOSTNAME:?err}-dot-${PIHOME_TPD:?err}-dns.conf"
 dnsmasq_wildcard_dns_conf_file="${dnsmasq_conf_dir}/${dnsmasq_wildcard_dns_conf_filename}"
 
-if [ ! -d "$dnsmasq_conf_dir" ]; then
-  mkdir "$dnsmasq_conf_dir"
-fi
-
 echoerr "creating a dnsmasq wildcard DNS entry in \`${dnsmasq_wildcard_dns_conf_file}\` \
-to point *.pihome.run to ${ip4}"
+to point \`*.${PIHOME_HOSTNAME:?err}.${PIHOME_TPD:?err}\` to \`${ip4}\`"
 cat <<EOF > "$dnsmasq_wildcard_dns_conf_file"
-address=/pihome.run/$ip4
+address=/${PIHOME_HOSTNAME:?err}.${PIHOME_TPD:?err}/$ip4
 EOF
 
 echoerr "confirm that the \`etc-pihole\` directory and docker-compose.yml file \

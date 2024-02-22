@@ -21,7 +21,7 @@ top_private_domain="${PIHOME_HOSTNAME}.${PIHOME_TLD}"
 top_private_domain_hostname="$PIHOME_HOSTNAME"
 top_level_domain="$PIHOME_TLD"
 
-echoerr "creating certificates with top private domain\`${top_private_domain}\` and tpd hostname \`${top_private_domain_hostname}\`"
+echoerr "creating certificates with top private domain: \`${top_private_domain}\` and tpd: \`${top_private_domain_hostname}\`"
 
 cert_timestamp_version=$(date --utc +"%F-%H_%M_%S")
 
@@ -129,10 +129,11 @@ function build_certs() {
 
 function build_dns_sans_block() {
   local subdomain_json_file=$1
+
   jq \
     --arg TOP_PRIVATE_DOMAIN "$top_private_domain" \
     --raw-output \
-    '. | to_entries | .[] | "DNS.\(.key + 1) = \(.value).\($TOP_PRIVATE_DOMAIN)"' \
+    '. | to_entries | .[] | if .value != "" then "DNS.\(.key + 1) = \(.value).\($TOP_PRIVATE_DOMAIN)" else "DNS.\(.key + 1) = \($TOP_PRIVATE_DOMAIN)" end' \
     "$subdomain_json_file"
 }
 

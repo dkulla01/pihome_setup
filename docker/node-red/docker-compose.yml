@@ -8,21 +8,21 @@ services:
       - TZ=America/New_York
       - MQTT_CLIENT_CERT=/etc/node-red/ssl/cert/node-red-mqtt-client.crt
       - MQTT_CLIENT_KEY=/etc/node-red/ssl/cert/node-red-mqtt-client.key
-      - MQTT_CA_CERT=/etc/node-red/ssl/root-cert/pihome-ca.pem
-      - MQTT_HOSTNAME=pihome.run
+      - MQTT_CA_CERT=/etc/node-red/ssl/root-cert/${PIHOME_HOSTNAME:?err}-ca.pem
+      - MQTT_HOSTNAME=${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}
       - MQTT_PORT=8883
     networks:
       traefik-net:
         ipv4_address: 172.22.0.14
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nodered.rule=Host(`nodered.pihome.run`, `nr.pihome.run`)"
+      - "traefik.http.routers.nodered.rule=Host(`nodered.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}`, `nr.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}`)"
       - "traefik.http.routers.nodered.entrypoints=websecure"
       - "traefik.http.routers.nodered.tls=true"
       - "traefik.http.services.nodered.loadbalancer.server.port=1880"
       - "traefik.docker.network=traefik-net"
-      - "traefik.http.middlewares.redirect-nr.redirectregex.regex=^https://nr.pihome.run/(.*)"
-      - "traefik.http.middlewares.redirect-nr.redirectregex.replacement=https://nodered.pihome.run/$${1}"
+      - "traefik.http.middlewares.redirect-nr.redirectregex.regex=^https://nr.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}/(.*)"
+      - "traefik.http.middlewares.redirect-nr.redirectregex.replacement=https://nodered.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}/$${1}"
       - "traefik.http.middlewares.redirect-nr.redirectregex.permanent=true"
       - "traefik.http.routers.nodered.middlewares=redirect-nr"
     volumes:
