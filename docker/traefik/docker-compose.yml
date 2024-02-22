@@ -13,8 +13,9 @@ services:
       - ./etc-traefik:/etc/traefik
       
       # use date-based versioning of root certs and the certs signed with them
-      - "./ssl/root-cert-${ROOT_CERT_VERSION:?err}:/etc/traefik-ssl/ca"
-      - "./ssl/cert-${CERT_VERSION:?err}:/etc/traefik-ssl/certs"
+      - "./ssl/root-cert-${ROOT_CERT_VERSION:?err}/${PIHOME_HOSTNAME:?err}-ca.pem:/etc/traefik-ssl/ca/pihome-ca.pem"
+      - "./ssl/cert-${CERT_VERSION:?err}/${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}.crt:/etc/traefik-ssl/certs/pihome.crt"
+      - "./ssl/cert-${CERT_VERSION:?err}/${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}.key:/etc/traefik-ssl/certs/pihome.key"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik-dashboard.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}`, `td.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}`)"
