@@ -38,6 +38,17 @@ echoerr "checking git..."
 install_package_if_absent 'git'
 git config --global pull.rebase false
 
+global_git_excludes_file="$HOME/.gitignore_global"
+echoerr "configuring a global excludes file at $global_git_excludes_file"
+touch "$global_git_excludes_file"
+cat << EOF > "$global_git_excludes_file"
+.envrc
+etc-*/
+.gitignored_junk/
+EOF
+
+git config --global core.excludesFile "$global_git_excludes_file"
+
 if [ -f "$HOME/.ssh/id_ed25519.pub" ]; then
   echoerr "an ssh key already exists"
 else
