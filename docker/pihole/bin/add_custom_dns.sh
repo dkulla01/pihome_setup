@@ -26,7 +26,7 @@ dnsmasq_wildcard_dns_conf_filename="wildcard-${PIHOME_HOSTNAME:?err}-dot-${PIHOM
 dnsmasq_wildcard_dns_conf_file="${dnsmasq_conf_dir}/${dnsmasq_wildcard_dns_conf_filename}"
 
 echoerr "creating a dnsmasq wildcard DNS entry in \`${dnsmasq_wildcard_dns_conf_file}\` \
-to point \`*.${PIHOME_HOSTNAME:?err}.${PIHOME_TPD:?err}\` to \`${ip4}\`"
+to point \`*.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}\` to \`${ip4}\`"
 cat <<EOF > "$dnsmasq_wildcard_dns_conf_file"
 address=/${PIHOME_HOSTNAME:?err}.${PIHOME_TPD:?err}/$ip4
 EOF
