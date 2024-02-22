@@ -41,7 +41,7 @@ git config --global pull.rebase false
 global_git_excludes_file="$HOME/.gitignore_global"
 echoerr "configuring a global excludes file at $global_git_excludes_file"
 touch "$global_git_excludes_file"
-cat << EOF > "$global_git_excludes_file"
+cat << 'EOF' > "$global_git_excludes_file"
 .envrc
 etc-*/
 .gitignored_junk/
