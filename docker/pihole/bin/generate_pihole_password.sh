@@ -16,5 +16,5 @@ if [[ -z "$container_id" ]]; then
   echoerr 'ERROR: pihole must be running in order to set a password. Ensure that pihole is running before trying to set a new pihole password'
   exit 1
 else
-  docker exec -it "$container_id" 'pihole -a -p'
+  docker exec -it "$container_id" 'pihole' '-a' '-p'
 fi
