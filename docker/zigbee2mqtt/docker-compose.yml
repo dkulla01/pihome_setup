@@ -7,7 +7,7 @@ services:
       - "./mosquitto-data:/mosquitto/data"
       - "./mosquitto-config:/mosquitto/conf:ro"
       - "./mosquitto-ssl/cert-${CERT_VERSION:?err}:/mosquitto-ssl/cert:ro"
-      - "./mosquitto-ssl/root-cert-${ROOT_CERT_VERSION:?err}:/mosquitto-ssl/root-cert:ro"
+      - "./mosquitto-ssl/root-cert-${ROOT_CERT_VERSION:?err}/${PIHOME_HOSTNAME:?err}-ca.pem:/mosquitto-ssl/root-cert/pihome-ca.pem:ro"
     ports:
       - "8883:8883"
       - "9001:9001"
@@ -23,7 +23,7 @@ services:
     volumes:
       - './zigbee2mqtt-data:/app/data'
       - './zigbee2mqtt-ssl/cert-${CERT_VERSION:?err}:/app/conf/ssl/cert:ro'
-      - './zigbee2mqtt-ssl/root-cert-${ROOT_CERT_VERSION:?err}:/app/conf/ssl/root-cert:ro'
+      - './zigbee2mqtt-ssl/root-cert-${ROOT_CERT_VERSION:?err}/${PIHOME_HOSTNAME:?err}-ca.pem:/app/conf/ssl/root-cert/pihome-ca.pem:ro'
       - '/run/udev:/run/udev:ro'
     networks:
       traefik-net:
