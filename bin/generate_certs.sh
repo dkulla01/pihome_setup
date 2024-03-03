@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euxo pipefail
 
 # make sure that globs that don't match anything return null 
 shopt -s nullglob
