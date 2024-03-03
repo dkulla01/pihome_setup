@@ -2,5 +2,6 @@
     "homeassistant-mqtt-client",
     "node-red-mqtt-client",
     "zigbee2mqtt-mqtt-client",
-    "pico-to-mqtt-mqtt-client"
+    "pico-to-mqtt-mqtt-client",
+    "mqtt-explorer-client"
 ]
