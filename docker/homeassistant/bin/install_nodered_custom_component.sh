@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-set -euxo pipefail
+set -euo pipefail
 
 script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 homeassistant_root_dir=$(dirname "$script_dir")

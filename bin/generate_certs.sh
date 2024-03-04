@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euxo pipefail
+set -euo pipefail
 
 # make sure that globs that don't match anything return null 
 shopt -s nullglob
@@ -260,7 +260,7 @@ jq --raw-output '.[]' "$mqtt_client_list_file" | while read -r mqtt_client_name;
 done
 
 extra_mqtt_clients_env_var="EXTRA_MQTT_CLIENTS"
-if [[ -n "${!extra_mqtt_clients_env_var}" ]]; then
+if [[ -v "${extra_mqtt_clients_env_var}" ]]; then
   echoerr "creating extra mqtt clients specified by ${extra_mqtt_clients_env_var}"
   # add an extra comma to end of the env var value to make sure we
   # capture the last value and nix the trailing newline

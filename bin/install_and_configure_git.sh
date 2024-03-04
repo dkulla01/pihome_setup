@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 # a copy of echoerr so we can curl/download the script from raw.githubusercontent.com/...
 #!/usr/bin/env bash
