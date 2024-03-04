@@ -27,6 +27,8 @@ install_package_if_absent 'libreadline-dev'
 install_package_if_absent 'libsqlite3-dev'
 install_package_if_absent 'liblzma-dev'
 install_package_if_absent 'apache2-utils' # needed for htpasswd
+install_package_if_absent 'pipx'
+
 install_package_if_absent 'jq'
 if ! command -v yq ; then
   echoerr 'installing yq'
