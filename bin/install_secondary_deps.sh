@@ -65,6 +65,7 @@ if ! grep "$pyenv_shell_config_snippet" ~/.bashrc; then
     echo 'export PYENV_ROOT="$HOME/.pyenv"'
     echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
     echo 'eval "$(pyenv init -)"'
+    echo 'eval "$(pyenv virtualenv-init -)"'
   } >> ~/.bashrc
 fi
 
@@ -77,6 +78,7 @@ if ! grep "$pyenv_shell_config_snippet" ~/.profile; then
     echo 'export PYENV_ROOT="$HOME/.pyenv"'
     echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
     echo 'eval "$(pyenv init -)"'
+    echo 'eval "$(pyenv virtualenv-init -)"'
   } >> ~/.profile
 fi
 
