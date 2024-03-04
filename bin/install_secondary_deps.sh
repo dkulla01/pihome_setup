@@ -13,6 +13,7 @@ source "$DIR/install_package_if_absent.sh"
 echoerr 'installing some utility packages I like to keep around'
 install_package_if_absent 'netcat-openbsd'
 install_package_if_absent 'vim'
+install_package_if_absent 'fd-find'
 
 echoerr 'installing packages required for pyenv to build pythons'
 
@@ -40,6 +41,13 @@ if ! command -v pyenv; then
   curl https://pyenv.run | bash
   echoerr "done installing pyenv"
 fi
+
+# $HOME/.profile adds $HOME/.local/bin to the path if the directory exists.
+echoerr "Making sure that a ${HOME}/.local/bin directory exists"
+mkdir -p "${HOME}/.local/bin"
+
+echoerr "linking ${HOME}/.local/bin/fd to fdfind"
+command -v fd || ln -s "$(which fdfind)" ~/.local/bin/fd
 
 # we want to put these literal strings (with their variables) into .bashrc
 # without interpolating/evaluating the variables
