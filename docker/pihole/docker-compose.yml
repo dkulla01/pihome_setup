@@ -5,9 +5,11 @@ services:
     container_name: pihole
     image: pihole/pihole:latest
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "67:67/udp"
+      # https://forums.docker.com/t/dns-issues-with-local-resolver-and-containers-on-the-same-host/102319/4
+      # not 100% sure why binding the host's IP address is required here
+      - "${IP4:?err}:53:53/tcp"
+      - "${IP4:?err}:53:53/udp"
+      - "${IP4:?err}:67:67/udp"
     environment:
       - 'TZ=America/New_York'
     labels:

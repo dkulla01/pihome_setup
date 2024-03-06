@@ -18,7 +18,7 @@ dnsmasq_conf_dir="${pihole_root_dir}/etc-dnsmasq.d"
 
 ip4=$(ip -o -4  addr list eth0 | awk '{print $4}' | cut -d/ -f1)
 
-echoerr "the LAN address of the eth0 interface is ${ip4}"
+echoerr "the LAN address of the eth0 interface is ${ip4}, add this to your .envrc"
 
 mkdir -p "$dnsmasq_conf_dir"
 
