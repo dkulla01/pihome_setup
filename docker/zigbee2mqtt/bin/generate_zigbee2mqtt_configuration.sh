@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 zigbee2mqtt_root_dir=$(dirname "$script_dir")
 docker_project_dir=$(dirname "$zigbee2mqtt_root_dir")
@@ -12,13 +14,14 @@ zigbee2mqtt_configuration_filename=configuration.yaml
 
 zigbee2mqtt_configuration_file="${zigbee2mqtt_root_dir}/${zigbee2mqtt_config_dirname}/${zigbee2mqtt_configuration_filename}"
 zigbee2mqtt_configuration_template_file="${zigbee2mqtt_root_dir}/${zigbee2mqtt_config_dirname}/${zigbee2mqtt_configuration_template_filename}"
-
+mqtt_fqdn="mqtts://mqtt.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}"
+yq_server_update_snippet=".mqtt.server = \"${mqtt_fqdn}\""
 # since the path building here is dynamic, 
 # shellcheck source=../../../bin/echoerr.sh
 source "$main_scripts_dir/echoerr.sh"
 
 if ! command -v yq > /dev/null; then
-  echoerr "yq must be installed to create the mosquitto password files"
+  echoerr "yq must be installed to create the zigbee2mqtt configuration files"
   exit 1
 fi
 
@@ -31,8 +34,9 @@ printf '\n'
 
 if [ "$using_ti_zigbee" = 'Y' ] || [ "$using_ti_zigbee" = 'y' ]; then
   echoerr "Formatting configuration to use default zigbee adapter"
-  # no actual formatting is required here -- just copy and rename the file
-  cp "$zigbee2mqtt_configuration_template_file" "$zigbee2mqtt_configuration_file"
+  yq \
+    "$yq_server_update_snippet" \
+    "$zigbee2mqtt_configuration_template_file" > "$zigbee2mqtt_configuration_file"
   exit 0
 fi
 
@@ -42,8 +46,10 @@ printf '\n'
 if [ "$using_si_labs_zigbee" = 'Y' ] || [ "$using_si_labs_zigbee" = 'y' ]; then
   echoerr "Formatting configuration to use \`ezsp\` zigbee adapter"
   # do formatting and exit
-  yq_update_snippet=".serial.adapter = \"ezsp\""
-  yq "$yq_update_snippet" "$zigbee2mqtt_configuration_template_file" > "$zigbee2mqtt_configuration_file"
+  yq_serial_adapter_update_snippet=".serial.adapter = \"ezsp\""
+  yq \
+    "${yq_server_update_snippet}, ${yq_serial_adapter_update_snippet}" \
+    "$zigbee2mqtt_configuration_template_file" > "$zigbee2mqtt_configuration_file"
   exit 0
 fi
 
