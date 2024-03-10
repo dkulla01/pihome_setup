@@ -4,10 +4,10 @@ services:
   pico_to_mqtt:
     image: ghcr.io/dkulla01/pico_to_mqtt:latest
     volumes:
-      - "./pico-to-mqtt-config:/etc/pico-to-mqtt/config"
-      - "./pico-to-mqtt-ssl/mqtt/cert-${CERT_VERSION:?err}:/etc/pico-to-mqtt/mqtt/ssl/certs"
-      - "./pico-to-mqtt-ssl/mqtt/root-cert-${ROOT_CERT_VERSION:?err}:/etc/pico-to-mqtt/mqtt/ssl/root-cert"
-      - "./pico-to-mqtt-ssl/pylutron-caseta/cert-${CASETA_CERT_VERSION:?err}:/etc/pico-to-mqtt/pylutron-caseta/ssl/certs"
+      - "./pico-to-mqtt-config:/etc/pico-to-mqtt/config:ro"
+      - "./pico-to-mqtt-ssl/mqtt/cert-${CERT_VERSION:?err}:/etc/pico-to-mqtt/mqtt/ssl/certs:ro"
+      - "./pico-to-mqtt-ssl/mqtt/root-cert-${ROOT_CERT_VERSION:?err}/${PIHOME_HOSTNAME:?err}-ca.pem:/etc/pico-to-mqtt/mqtt/ssl/root-cert/pihome-ca.pem:ro"
+      - "./pico-to-mqtt-ssl/pylutron-caseta/cert-${CASETA_CERT_VERSION:?err}:/etc/pico-to-mqtt/pylutron-caseta/ssl/certs:ro"
     restart: unless-stopped
     environment:
       PICO_TO_MQTT_SETTINGS: "/etc/pico-to-mqtt/config/default-settings.toml:/etc/pico-to-mqtt/config/settings.toml:/etc/pico-to-mqtt/config/secrets.toml"

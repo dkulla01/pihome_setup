@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set +ex
+set -euo pipefail
 
 DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
@@ -11,8 +11,10 @@ source "$DIR/echoerr.sh"
 source "$DIR/install_package_if_absent.sh"
 
 echoerr 'installing some utility packages I like to keep around'
-install_package_if_absent 'netcat'
+install_package_if_absent 'netcat-openbsd'
+install_package_if_absent 'dnsutils'
 install_package_if_absent 'vim'
+install_package_if_absent 'fd-find'
 
 echoerr 'installing packages required for pyenv to build pythons'
 
@@ -26,6 +28,8 @@ install_package_if_absent 'libreadline-dev'
 install_package_if_absent 'libsqlite3-dev'
 install_package_if_absent 'liblzma-dev'
 install_package_if_absent 'apache2-utils' # needed for htpasswd
+install_package_if_absent 'pipx'
+
 install_package_if_absent 'jq'
 if ! command -v yq ; then
   echoerr 'installing yq'
@@ -41,6 +45,13 @@ if ! command -v pyenv; then
   echoerr "done installing pyenv"
 fi
 
+# $HOME/.profile adds $HOME/.local/bin to the path if the directory exists.
+echoerr "Making sure that a ${HOME}/.local/bin directory exists"
+mkdir -p "${HOME}/.local/bin"
+
+echoerr "linking ${HOME}/.local/bin/fd to fdfind"
+command -v fd || ln -s "$(which fdfind)" ~/.local/bin/fd
+
 # we want to put these literal strings (with their variables) into .bashrc
 # without interpolating/evaluating the variables
 # shellcheck disable=SC2016
@@ -55,6 +66,7 @@ if ! grep "$pyenv_shell_config_snippet" ~/.bashrc; then
     echo 'export PYENV_ROOT="$HOME/.pyenv"'
     echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
     echo 'eval "$(pyenv init -)"'
+    echo 'eval "$(pyenv virtualenv-init -)"'
   } >> ~/.bashrc
 fi
 
@@ -67,6 +79,7 @@ if ! grep "$pyenv_shell_config_snippet" ~/.profile; then
     echo 'export PYENV_ROOT="$HOME/.pyenv"'
     echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
     echo 'eval "$(pyenv init -)"'
+    echo 'eval "$(pyenv virtualenv-init -)"'
   } >> ~/.profile
 fi
 
@@ -104,12 +117,12 @@ if dpkg --compare-versions "$systemd_version" "<=" "252"; then
 fi
 
 
-python_minor_version='3.11'
+python_minor_version='3.12'
 if ! pyenv versions --bare | grep "$python_minor_version"; then
-  echoerr "installing the latest python 3.11 version"
+  echoerr "installing the latest python ${python_minor_version} version"
   pyenv install "$python_minor_version"
 
-  echoerr 'making python 3.11 the global python'
+  echoerr "making python ${python_minor_version} the global python"
   pyenv global "$python_minor_version"
 
   echoerr 'restarting the shell to pick up the pyenv changes'

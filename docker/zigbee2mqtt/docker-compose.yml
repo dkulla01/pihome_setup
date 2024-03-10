@@ -7,7 +7,7 @@ services:
       - "./mosquitto-data:/mosquitto/data"
       - "./mosquitto-config:/mosquitto/conf:ro"
       - "./mosquitto-ssl/cert-${CERT_VERSION:?err}:/mosquitto-ssl/cert:ro"
-      - "./mosquitto-ssl/root-cert-${ROOT_CERT_VERSION:?err}:/mosquitto-ssl/root-cert:ro"
+      - "./mosquitto-ssl/root-cert-${ROOT_CERT_VERSION:?err}/${PIHOME_HOSTNAME:?err}-ca.pem:/mosquitto-ssl/root-cert/pihome-ca.pem:ro"
     ports:
       - "8883:8883"
       - "9001:9001"
@@ -23,7 +23,7 @@ services:
     volumes:
       - './zigbee2mqtt-data:/app/data'
       - './zigbee2mqtt-ssl/cert-${CERT_VERSION:?err}:/app/conf/ssl/cert:ro'
-      - './zigbee2mqtt-ssl/root-cert-${ROOT_CERT_VERSION:?err}:/app/conf/ssl/root-cert:ro'
+      - './zigbee2mqtt-ssl/root-cert-${ROOT_CERT_VERSION:?err}/${PIHOME_HOSTNAME:?err}-ca.pem:/app/conf/ssl/root-cert/pihome-ca.pem:ro'
       - '/run/udev:/run/udev:ro'
     networks:
       traefik-net:
@@ -32,13 +32,13 @@ services:
       - 'TZ=America/New_York'
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.z2m.rule=Host(`zigbee2mqtt.pihome.run`, `z2m.pihome.run`)"
+      - "traefik.http.routers.z2m.rule=Host(`zigbee2mqtt.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}`, `z2m.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}`)"
       - "traefik.http.routers.z2m.entrypoints=websecure"
       - "traefik.http.routers.z2m.tls=true"
       - "traefik.http.services.z2m.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik-net"
-      - "traefik.http.middlewares.redirect-z2m.redirectregex.regex=^https://z2m.pihome.run/(.*)"
-      - "traefik.http.middlewares.redirect-z2m.redirectregex.replacement=https://zigbee2mqtt.pihome.run/$${1}"
+      - "traefik.http.middlewares.redirect-z2m.redirectregex.regex=^https://z2m.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}/(.*)"
+      - "traefik.http.middlewares.redirect-z2m.redirectregex.replacement=https://zigbee2mqtt.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}/$${1}"
       - "traefik.http.middlewares.redirect-z2m.redirectregex.permanent=true"
       - "traefik.http.routers.z2m.middlewares=redirect-z2m"
     devices:

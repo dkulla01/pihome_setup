@@ -5,20 +5,22 @@ services:
     container_name: pihole
     image: pihole/pihole:latest
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "67:67/udp"
+      # https://forums.docker.com/t/dns-issues-with-local-resolver-and-containers-on-the-same-host/102319/4
+      # not 100% sure why binding the host's IP address is required here
+      - "${IP4:?err}:53:53/tcp"
+      - "${IP4:?err}:53:53/udp"
+      - "${IP4:?err}:67:67/udp"
     environment:
       - 'TZ=America/New_York'
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pihole.rule=Host(`pihole.pihome.run`)"
+      - "traefik.http.routers.pihole.rule=Host(`pihole.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}`)"
       - "traefik.http.routers.pihole.entrypoints=websecure"
       - "traefik.http.routers.pihole.tls=true"
       - "traefik.http.services.pihole.loadbalancer.server.port=80"
       - "traefik.docker.network=traefik-net"
-      - "traefik.http.middlewares.pihole-add-admin-path.redirectregex.regex=^https://pihole.pihome.run/?$"
-      - "traefik.http.middlewares.pihole-add-admin-path.redirectregex.replacement=https://pihole.pihome.run/admin"
+      - "traefik.http.middlewares.pihole-add-admin-path.redirectregex.regex=^https://pihole.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}/?$"
+      - "traefik.http.middlewares.pihole-add-admin-path.redirectregex.replacement=https://pihole.${PIHOME_HOSTNAME:?err}.${PIHOME_TLD:?err}/admin"
       - "traefik.http.middlewares.pihole-add-admin-path.redirectregex.permanent=true"
       - "traefik.http.routers.pihole.middlewares=pihole-add-admin-path"
     volumes:

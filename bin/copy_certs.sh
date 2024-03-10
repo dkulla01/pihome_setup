@@ -1,11 +1,26 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 project_dir=$(dirname "$script_dir")
 ssl_certs_dir="${project_dir}/ssl"
 
 source "$script_dir/echoerr.sh"
+if [[ ! -v PIHOME_HOSTNAME ]]; then
+  echoerr "PIHOME_HOSTNAME environment variable is not set"
+  exit 1
+fi
+
+if [[ ! -v PIHOME_TLD ]]; then
+  echoerr "PIHOME_TLD environment variable is not set"
+  exit 1
+fi
+
+top_private_domain="${PIHOME_HOSTNAME}.${PIHOME_TLD}"
+top_private_domain_hostname="$PIHOME_HOSTNAME"
+root_cert_file_prefix="${top_private_domain_hostname}-ca"
+root_ca_cert_filename="${root_cert_file_prefix}.pem"
+root_ca_key_filename="${root_cert_file_prefix}.key"
 
 # 2023-12-25-01_53_17
 date_version_regex='^[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}_[0-9]{2}_[0-9]{2}$'
@@ -20,8 +35,8 @@ else
 fi;
 
 versioned_root_cert_dir="${ssl_certs_dir}/root-cert-${ROOT_CERT_VERSION}"
-root_cert_file="${versioned_root_cert_dir}/pihome-ca.pem"
-root_cert_key_file="${versioned_root_cert_dir}/pihome-ca.key"
+root_cert_file="${versioned_root_cert_dir}/${root_ca_cert_filename}"
+root_cert_key_file="${versioned_root_cert_dir}/${root_ca_key_filename}"
 
 if [[ ! -d "$versioned_root_cert_dir" ]] \
   || [[ ! -f  $root_cert_file ]] \
@@ -46,8 +61,8 @@ versioned_cert_dir="${ssl_certs_dir}/cert-${CERT_VERSION}"
 # check that all of the non-root certs we're looking for exist
 echoerr "checking for traefik reverse proxy certs"
 traefik_cert_dir="${versioned_cert_dir}/traefik"
-traefik_cert_file="${traefik_cert_dir}/pihome.run.crt"
-traefik_cert_key_file="${traefik_cert_dir}/pihome.run.key"
+traefik_cert_file="${traefik_cert_dir}/${top_private_domain}.crt"
+traefik_cert_key_file="${traefik_cert_dir}/${top_private_domain}.key"
 
 if [[ ! -d "$traefik_cert_dir" ]] \
   || [[ ! -f "$traefik_cert_file" ]] \

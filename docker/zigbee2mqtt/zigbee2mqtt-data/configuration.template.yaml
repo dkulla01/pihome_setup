@@ -1,6 +1,6 @@
 mqtt:
   base_topic: zigbee2mqtt
-  server: "mqtts://mqtt:8883"
+  server: ''
   keepalive: 60
   reject_unauthorized: true
   user: "!secret.yaml user"
